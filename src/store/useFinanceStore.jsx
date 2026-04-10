@@ -13,6 +13,7 @@ export const useFinanceStore = create((set) => ({
     { id: 2, name: "Gaji", type: "income", icon: "Banknote" },
     { id: 3, name: "Transportasi", type: "expense", icon: "Car" },
     { id: 4, name: "Hiburan", type: "expense", icon: "Gamepad" },
+    { id: 5, name: "Penginapan", type: "expense", icon: "House" },
   ],
 
   transactions: [

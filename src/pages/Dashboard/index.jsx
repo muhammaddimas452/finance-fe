@@ -14,32 +14,83 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import BalanceCard from "../../components/ui/BalanceCard";
-import { useUIStore } from "../../store/useUIStore";
-
-// --- DUMMY DATA UNTUK GRAFIK ---
-const exchangeData = [
-  { name: "APR", rate: 13.5 },
-  { name: "MAY", rate: 14.2 },
-  { name: "JUN", rate: 13.8 },
-  { name: "JUL", rate: 15.5 },
-  { name: "AUG", rate: 14.8 },
-];
-
-const historyData = [
-  { name: "APR", income: 3000, expense: 1500 },
-  { name: "MAY", income: 2500, expense: 1800 },
-  { name: "JUN", income: 3200, expense: 2000 },
-  { name: "JUL", income: 2800, expense: 2500 },
-  { name: "AUG", income: 2900, expense: 1900 },
-];
-
-const efficiencyData = [
-  { name: "Income", value: 75, color: "#5b58ff" },
-  { name: "Expense", value: 25, color: "#ffb3c6" },
-];
+import { useFinanceStore } from "../../store/useFinanceStore";
+import { formatRupiah } from "../../utils/currency";
 
 const Dashboard = () => {
-  const setIsRightPanelOpen = useUIStore((state) => state.setIsRightPanelOpen);
+  // 1. Ambil data transaksi dari global state
+  const { transactions } = useFinanceStore();
+
+  // 2. Hitung Efisiensi (Total Pemasukan vs Total Pengeluaran)
+  const totalIncome = transactions
+    .filter((t) => t.type === "income")
+    .reduce((acc, t) => acc + t.amount, 0);
+
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((acc, t) => acc + t.amount, 0);
+
+  // Data untuk Donut Chart
+  const efficiencyData = [
+    {
+      name: "Income",
+      value: totalIncome > 0 ? totalIncome : 1,
+      color: "#5b58ff",
+    },
+    { name: "Expense", value: totalExpense, color: "#ffb3c6" },
+  ];
+
+  // Hitung persentase sisa uang (Net) dari Income
+  const netIncome = totalIncome - totalExpense;
+  const efficiencyPercentage =
+    totalIncome > 0 ? Math.round((netIncome / totalIncome) * 100) : 0;
+
+  // 3. Proses Data untuk Bar Chart (History 6 Bulan Terakhir)
+  const monthNames = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ];
+  const currentMonthIndex = new Date().getMonth();
+
+  // Buat array 6 bulan ke belakang
+  const last6Months = Array.from({ length: 6 }).map((_, i) => {
+    let d = new Date();
+    d.setMonth(currentMonthIndex - 5 + i);
+    return monthNames[d.getMonth()];
+  });
+
+  // Siapkan template wadah data per bulan
+  let historyData = last6Months.map((month) => ({
+    name: month,
+    income: 0,
+    expense: 0,
+  }));
+
+  // Masukkan data transaksi asli ke dalam bulan yang sesuai
+  transactions.forEach((t) => {
+    const tMonth = monthNames[new Date(t.date).getMonth()];
+    const monthEntry = historyData.find((m) => m.name === tMonth);
+    if (monthEntry) {
+      if (t.type === "income") monthEntry.income += t.amount;
+      if (t.type === "expense") monthEntry.expense += t.amount;
+    }
+  });
+
+  // 4. Data untuk Line Chart (Cash Flow Trend = Income - Expense per bulan)
+  const cashFlowData = historyData.map((m) => ({
+    name: m.name,
+    balance: m.income - m.expense, // Saldo bersih bulan tersebut
+  }));
 
   return (
     <div className="flex flex-col h-full">
@@ -59,7 +110,9 @@ const Dashboard = () => {
 
         <button
           className="hidden md:flex lg:hidden w-10 h-10 rounded-full overflow-hidden border-2 border-brand-500 shadow-sm"
-          onClick={() => setIsRightPanelOpen(true)}
+          onClick={() => {
+            /* Trigger buka RightPanel sudah dihandle oleh global state sebelumnya jika Anda pindahkan ke MainLayout */
+          }}
         >
           <img
             src="https://i.pravatar.cc/150?img=11"
@@ -84,7 +137,7 @@ const Dashboard = () => {
           </div>
           <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={exchangeData}>
+              <LineChart data={cashFlowData}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
@@ -102,11 +155,15 @@ const Dashboard = () => {
                   tickLine={false}
                   tick={{ fontSize: 10, fill: "#A0AEC0" }}
                   dx={-10}
+                  width={60}
                 />
-                <Tooltip cursor={{ stroke: "#e0e0ff", strokeWidth: 2 }} />
+                <Tooltip
+                  cursor={{ stroke: "#e0e0ff", strokeWidth: 2 }}
+                  formatter={(value) => formatRupiah(value)}
+                />
                 <Line
                   type="monotone"
-                  dataKey="rate"
+                  dataKey="balance"
                   stroke="#5b58ff"
                   strokeWidth={3}
                   dot={{
@@ -131,7 +188,7 @@ const Dashboard = () => {
           </div>
           <div className="flex-1 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={historyData} barSize={6}>
+              <BarChart data={historyData} barSize={8}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
@@ -149,8 +206,12 @@ const Dashboard = () => {
                   tickLine={false}
                   tick={{ fontSize: 10, fill: "#A0AEC0" }}
                   dx={-10}
+                  width={60}
                 />
-                <Tooltip cursor={{ fill: "transparent" }} />
+                <Tooltip
+                  cursor={{ fill: "transparent" }}
+                  formatter={(value) => formatRupiah(value)}
+                />
                 <Bar
                   dataKey="income"
                   fill="#5b58ff"
@@ -164,7 +225,6 @@ const Dashboard = () => {
               </BarChart>
             </ResponsiveContainer>
           </div>
-          {/* Legend Custom */}
           <div className="flex justify-center gap-6 mt-4 text-xs font-medium text-gray-400">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-brand-500"></div> Income
@@ -199,12 +259,21 @@ const Dashboard = () => {
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
-            {/* Teks di tengah Donut Chart */}
+
+            {/* Teks di tengah Donut Chart Otomatis */}
             <div className="absolute flex flex-col items-center">
-              <span className="text-xl font-bold text-gray-800">$ 1,700</span>
-              <span className="text-[10px] font-bold text-brand-500 bg-brand-50 px-2 py-1 rounded-md mt-1">
-                +55%
+              <span className="text-xl font-bold text-gray-800">
+                {/* Jika net income minus, tampilkan 0 atau Rp 0 */}
+                {netIncome > 0 ? formatRupiah(netIncome) : "Rp 0"}
               </span>
+              <span
+                className={`text-[10px] font-bold px-2 py-1 rounded-md mt-1 ${efficiencyPercentage > 0 ? "text-brand-500 bg-brand-50" : "text-red-500 bg-red-50"}`}
+              >
+                {efficiencyPercentage > 0
+                  ? `+${efficiencyPercentage}%`
+                  : `${efficiencyPercentage}%`}
+              </span>
+              <span className="text-[9px] text-gray-400 mt-1">Remaining</span>
             </div>
           </div>
         </div>
