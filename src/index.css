@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/* Custom Scrollbar tipis untuk elemen dengan class overflow-y-auto */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb; /* Warna abu-abu terang (gray-200) */
+  border-radius: 10px;
+} /* Custom Scrollbar tipis untuk elemen dengan class overflow-y-auto */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e5e7eb; /* Warna abu-abu terang (gray-200) */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db; /* Warna saat dihover (gray-300) */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db; /* Warna saat dihover (gray-300) */
+}
