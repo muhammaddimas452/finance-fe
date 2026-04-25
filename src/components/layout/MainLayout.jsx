@@ -12,6 +12,9 @@ const MainLayout = ({ children }) => {
     setIsRightPanelOpen,
   } = useUIStore();
 
+  console.log(typeof setIsMobileMenuOpen);
+  console.log(typeof setIsRightPanelOpen);
+
   return (
     // Background luar: padding hilang di mobile agar full screen
     <div className="min-h-screen bg-background p-0 md:p-4 lg:p-8 flex items-center justify-center font-sans">

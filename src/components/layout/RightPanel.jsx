@@ -9,6 +9,7 @@ import {
 import { useUIStore } from "../../store/useUIStore"; // Import store
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
+import Profile from "../../assets/profile.JPEG";
 
 const RightPanel = () => {
   const { isRightPanelOpen, setIsRightPanelOpen, openTransactionModal } =
@@ -80,11 +81,13 @@ const RightPanel = () => {
       {/* Profile */}
       <div className="flex flex-col items-center">
         <img
-          src="https://i.pravatar.cc/150?img=11"
+          src={Profile}
           alt="Profile"
           className="w-20 h-20 rounded-full mb-3 shadow-md border-4 border-white"
         />
-        <h3 className="font-bold text-lg text-gray-800">Jonas Kanwald</h3>
+        <h3 className="font-bold text-lg text-gray-800">
+          M Dimas Wakhid Wijaya
+        </h3>
       </div>
 
       {/* Quick Actions */}

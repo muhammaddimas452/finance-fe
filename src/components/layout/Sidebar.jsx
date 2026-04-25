@@ -12,18 +12,26 @@ import {
   X,
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore"; // Import store
+import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useUIStore();
+  const location = useLocation();
+
   const menuItems = [
-    { name: "Dashboard", icon: LayoutDashboard, active: true },
-    { name: "Transactions", icon: ArrowRightLeft, active: false }, // MVP
-    { name: "Wallets", icon: Wallet, active: false }, // MVP
-    { name: "Categories", icon: Tags, active: false }, // MVP
-    { name: "Budgets", icon: Target, active: false }, // Menengah
-    { name: "Debts", icon: HandCoins, active: false }, // Menengah
-    { name: "Reports", icon: PieChart, active: false }, // Menengah
-    { name: "Savings Goals", icon: PiggyBank, active: false }, // Lanjutan
+    { name: "Dashboard", icon: LayoutDashboard, active: true, path: "/" }, // MVP
+    {
+      name: "Transactions",
+      icon: ArrowRightLeft,
+      active: false,
+      path: "/transaction",
+    }, // MVP
+    { name: "Wallets", icon: Wallet, active: false, path: "/wallets" }, // MVP
+    { name: "Categories", icon: Tags, active: false, path: "/categories" }, // MVP
+    { name: "Budgets", icon: Target, active: false, path: "/budgets" }, // Menengah
+    { name: "Debts", icon: HandCoins, active: false, path: "/debts" }, // Menengah
+    { name: "Reports", icon: PieChart, active: false, path: "/reports" }, // Menengah
+    { name: "Savings Goals", icon: PiggyBank, active: false, path: "/savings" }, // Lanjutan
   ];
 
   return (
@@ -54,27 +62,31 @@ const Sidebar = () => {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-2 overflow-y-auto pr-2 pb-4">
-        {menuItems.map((item) => (
-          <a
-            key={item.name}
-            href="#"
-            className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200 ${
-              item.active
-                ? 'bg-brand-50 text-brand-500 relative before:content-[""] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1 before:bg-brand-500 before:rounded-r-md'
-                : "text-gray-400 hover:text-gray-700 hover:bg-gray-50"
-            }`}
-          >
-            <item.icon
-              size={20}
-              className={item.active ? "text-brand-500" : ""}
-            />
-            <span
-              className={`font-medium ${item.active ? "text-brand-500" : ""}`}
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={item.name}
+              to={item.path}
+              onClick={() => setIsMobileMenuOpen(false)} // Tutup menu saat klik
+              className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200 ${
+                isActive
+                  ? 'bg-brand-50 text-brand-500 relative before:content-[""] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1 before:bg-brand-500 before:rounded-r-md'
+                  : "text-gray-400 hover:text-gray-700 hover:bg-gray-50"
+              }`}
             >
-              {item.name}
-            </span>
-          </a>
-        ))}
+              <item.icon
+                size={20}
+                className={item.active ? "text-brand-500" : ""}
+              />
+              <span
+                className={`font-medium ${item.active ? "text-brand-500" : ""}`}
+              >
+                {item.name}
+              </span>
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Promo Card (Disembunyikan di layar HP kecil agar tidak menumpuk) */}

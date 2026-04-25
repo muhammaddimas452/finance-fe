@@ -1,25 +1,23 @@
 import { create } from "zustand";
 
 export const useUIStore = create((set) => ({
-  // --- State Menu Kiri & Kanan ---
   isMobileMenuOpen: false,
   isRightPanelOpen: false,
 
-  // --- State Modal Transaksi ---
+  // State untuk Modal Transaksi
   isTransactionModalOpen: false,
-  transactionType: "expense", // default: expense (pengeluaran)
+  transactionType: "expense",
 
-  // --- Aksi Menu ---
-  toggleMobileMenu: () =>
-    set((state) => ({ isMobileMenuOpen: !state.isMobileMenuOpen })),
-  setMobileMenuOpen: (isOpen) => set({ isMobileMenuOpen: isOpen }),
-
-  toggleRightPanel: () =>
-    set((state) => ({ isRightPanelOpen: !state.isRightPanelOpen })),
-  setRightPanelOpen: (isOpen) => set({ isRightPanelOpen: isOpen }),
-
-  // --- Aksi Modal Transaksi (INI FUNGSI YANG ERROR TADI) ---
+  // Action untuk Modal Transaksi
   openTransactionModal: (type = "expense") =>
     set({ isTransactionModalOpen: true, transactionType: type }),
   closeTransactionModal: () => set({ isTransactionModalOpen: false }),
+
+  toggleMobileMenu: () =>
+    set((state) => ({ isMobileMenuOpen: !state.isMobileMenuOpen })),
+  setIsMobileMenuOpen: (isOpen) => set({ isMobileMenuOpen: isOpen }),
+
+  toggleRightPanel: () =>
+    set((state) => ({ isRightPanelOpen: !state.isRightPanelOpen })),
+  setIsRightPanelOpen: (isOpen) => set({ isRightPanelOpen: isOpen }),
 }));

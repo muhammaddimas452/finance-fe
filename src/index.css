@@ -33,3 +33,7 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #d1d5db; /* Warna saat dihover (gray-300) */
 }
+
+body {
+  overflow-x: hidden;
+}
