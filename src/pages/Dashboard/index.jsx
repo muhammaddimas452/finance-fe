@@ -16,6 +16,7 @@ import {
 import BalanceCard from "../../components/ui/BalanceCard";
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
+import Profile from "../../assets/profile.JPEG";
 
 const Dashboard = () => {
   // 1. Ambil data transaksi dari global state
@@ -109,13 +110,13 @@ const Dashboard = () => {
         </div>
 
         <button
-          className="hidden md:flex lg:hidden w-10 h-10 rounded-full overflow-hidden border-2 border-brand-500 shadow-sm"
+          className="hidden md:flex lg:hidden w-10 h-10 rounded-full overflow-hidden shadow-sm"
           onClick={() => {
             /* Trigger buka RightPanel sudah dihandle oleh global state sebelumnya jika Anda pindahkan ke MainLayout */
           }}
         >
           <img
-            src="https://i.pravatar.cc/150?img=11"
+            src={Profile}
             alt="Profile"
             className="w-full h-full object-cover"
           />

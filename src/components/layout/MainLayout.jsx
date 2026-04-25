@@ -3,6 +3,7 @@ import { Menu, AlignEndHorizontal } from "lucide-react";
 import Sidebar from "./Sidebar";
 import RightPanel from "./RightPanel";
 import TransactionModal from "../ui/TransactionModal";
+import Profile from "../../assets/profile.JPEG";
 
 const MainLayout = ({ children }) => {
   const {
@@ -42,10 +43,10 @@ const MainLayout = ({ children }) => {
           {/* Tombol Profile Kanan / Untuk Right Panel */}
           <button
             onClick={() => setIsRightPanelOpen(true)}
-            className="w-10 h-10 rounded-full overflow-hidden border-2 border-brnad-500 shadow-sm"
+            className="w-10 h-10 rounded-full overflow-hidden shadow-sm"
           >
             <img
-              src="https://i.pravatar.cc/150?img=11"
+              src={Profile}
               alt="Profile"
               className="w-full h-full object-cover"
             />
