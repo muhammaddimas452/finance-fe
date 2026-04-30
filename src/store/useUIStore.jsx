@@ -3,6 +3,9 @@ import { create } from "zustand";
 export const useUIStore = create((set) => ({
   isMobileMenuOpen: false,
   isRightPanelOpen: false,
+  isTransferModalOpen: false,
+  isCategoryModalOpen: false,
+  categoryEditData: null,
 
   // State untuk Modal Transaksi
   isTransactionModalOpen: false,
@@ -20,4 +23,12 @@ export const useUIStore = create((set) => ({
   toggleRightPanel: () =>
     set((state) => ({ isRightPanelOpen: !state.isRightPanelOpen })),
   setIsRightPanelOpen: (isOpen) => set({ isRightPanelOpen: isOpen }),
+
+  openTransferModal: () => set({ isTransferModalOpen: true }),
+  closeTransferModal: () => set({ isTransferModalOpen: false }),
+
+  openCategoryModal: (data = null) =>
+    set({ isCategoryModalOpen: true, categoryEditData: data }),
+  closeCategoryModal: () =>
+    set({ isCategoryModalOpen: false, categoryEditData: null }),
 }));

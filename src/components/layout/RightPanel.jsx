@@ -12,8 +12,12 @@ import { formatRupiah } from "../../utils/currency";
 import Profile from "../../assets/profile.JPEG";
 
 const RightPanel = () => {
-  const { isRightPanelOpen, setIsRightPanelOpen, openTransactionModal } =
-    useUIStore();
+  const {
+    isRightPanelOpen,
+    setIsRightPanelOpen,
+    openTransactionModal,
+    openTransferModal,
+  } = useUIStore();
   const { transactions } = useFinanceStore();
 
   // Ambil 5 transaksi terbaru saja
@@ -42,7 +46,7 @@ const RightPanel = () => {
       color: "text-blue-500",
       bg: "bg-blue-50",
       hover: "hover:bg-blue-500",
-      onClick: () => alert("Fitur Transfer Dompet akan segera hadir!"),
+      onClick: () => openTransferModal(),
     },
     {
       name: "Bill",

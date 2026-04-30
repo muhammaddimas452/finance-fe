@@ -4,6 +4,8 @@ import Sidebar from "./Sidebar";
 import RightPanel from "./RightPanel";
 import TransactionModal from "../ui/TransactionModal";
 import Profile from "../../assets/profile.JPEG";
+import TransferModal from "../ui/TransferModal";
+import CategoryModal from "../ui/CategoryModal";
 
 const MainLayout = ({ children }) => {
   const {
@@ -20,6 +22,8 @@ const MainLayout = ({ children }) => {
     // Background luar: padding hilang di mobile agar full screen
     <div className="min-h-screen bg-background p-0 md:p-4 lg:p-8 flex items-center justify-center font-sans">
       <TransactionModal />
+      <TransferModal />
+      <CategoryModal />
       {/* Container Aplikasi: border-radius dan height disesuaikan untuk mobile */}
       <div className="bg-white w-full max-w-[1400px] h-screen md:h-[90vh] md:min-h-[700px] rounded-none md:rounded-[2.5rem] shadow-none md:shadow-soft flex overflow-hidden border-none md:border border-white/50 relative">
         {/* Mobile Header (Hanya muncul di layar kecil) */}

@@ -19,19 +19,54 @@ const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Dashboard", icon: LayoutDashboard, active: true, path: "/" }, // MVP
+    {
+      name: "Dashboard",
+      icon: LayoutDashboard,
+      active: true,
+      path: "/finance-fe/",
+    }, // MVP
     {
       name: "Transactions",
       icon: ArrowRightLeft,
       active: false,
-      path: "/transaction",
+      path: "/finance-fe/transaction",
     }, // MVP
-    { name: "Wallets", icon: Wallet, active: false, path: "/wallets" }, // MVP
-    { name: "Categories", icon: Tags, active: false, path: "/categories" }, // MVP
-    { name: "Budgets", icon: Target, active: false, path: "/budgets" }, // Menengah
-    { name: "Debts", icon: HandCoins, active: false, path: "/debts" }, // Menengah
-    { name: "Reports", icon: PieChart, active: false, path: "/reports" }, // Menengah
-    { name: "Savings Goals", icon: PiggyBank, active: false, path: "/savings" }, // Lanjutan
+    {
+      name: "Wallets",
+      icon: Wallet,
+      active: false,
+      path: "/finance-fe/wallets",
+    }, // MVP
+    {
+      name: "Categories",
+      icon: Tags,
+      active: false,
+      path: "/finance-fe/categories",
+    }, // MVP
+    {
+      name: "Budgets",
+      icon: Target,
+      active: false,
+      path: "/finance-fe/budgets",
+    }, // Menengah
+    {
+      name: "Debts",
+      icon: HandCoins,
+      active: false,
+      path: "/finance-fe/debts",
+    }, // Menengah
+    {
+      name: "Reports",
+      icon: PieChart,
+      active: false,
+      path: "/finance-fe/reports",
+    }, // Menengah
+    {
+      name: "Savings Goals",
+      icon: PiggyBank,
+      active: false,
+      path: "/finance-fe/savings",
+    }, // Lanjutan
   ];
 
   return (
