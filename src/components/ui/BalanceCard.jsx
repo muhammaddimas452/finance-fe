@@ -5,7 +5,9 @@ const BalanceCard = () => {
   const wallets = useFinanceStore((state) => state.wallets);
 
   // Hitung total saldo dari semua dompet
-  const totalBalance = wallets.reduce((acc, wallet) => acc + wallet.balance, 0);
+  const totalBalance = wallets.reduce((total, wallet) => {
+    return total + parseFloat(wallet.balance || 0);
+  }, 0);
 
   return (
     <div className="bg-brand-500 rounded-[2rem] p-6 bg-purple-600 text-white shadow-xl shadow-brand-500/40 flex flex-col justify-between h-full relative overflow-hidden">
@@ -34,9 +36,6 @@ const BalanceCard = () => {
           <div>
             <p className="font-semibold text-sm">
               {wallets[1]?.name || "Bank Account"}
-            </p>
-            <p className="text-[10px] text-brand-100 uppercase mt-1">
-              **** **** 6252
             </p>
           </div>
           <div className="text-right">

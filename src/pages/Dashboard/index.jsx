@@ -1,4 +1,4 @@
-import { Search, MoreHorizontal } from "lucide-react";
+import { Search, MoreHorizontal, UserIcon } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -17,34 +17,37 @@ import BalanceCard from "../../components/ui/BalanceCard";
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
 import Profile from "../../assets/profile.JPEG";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const Dashboard = () => {
   // 1. Ambil data transaksi dari global state
   const { transactions } = useFinanceStore();
 
+  const { user, isAuthenticated } = useAuthStore();
+
   // 2. Hitung Efisiensi (Total Pemasukan vs Total Pengeluaran)
   const totalIncome = transactions
     .filter((t) => t.type === "income")
-    .reduce((acc, t) => acc + t.amount, 0);
+    .reduce((total, t) => total + parseFloat(t.amount || 0), 0);
 
   const totalExpense = transactions
     .filter((t) => t.type === "expense")
-    .reduce((acc, t) => acc + t.amount, 0);
+    .reduce((total, t) => total + parseFloat(t.amount || 0), 0);
 
   // Data untuk Donut Chart
-  const efficiencyData = [
-    {
-      name: "Income",
-      value: totalIncome > 0 ? totalIncome : 1,
-      color: "#5b58ff",
-    },
-    { name: "Expense", value: totalExpense, color: "#ffb3c6" },
-  ];
+  // const efficiencyData = [
+  //   {
+  //     name: "Income",
+  //     value: totalIncome > 0 ? totalIncome : 1,
+  //     color: "#5b58ff",
+  //   },
+  //   { name: "Expense", value: totalExpense, color: "#ffb3c6" },
+  // ];
 
   // Hitung persentase sisa uang (Net) dari Income
   const netIncome = totalIncome - totalExpense;
-  const efficiencyPercentage =
-    totalIncome > 0 ? Math.round((netIncome / totalIncome) * 100) : 0;
+  // const efficiencyPercentage =
+  totalIncome > 0 ? Math.round((netIncome / totalIncome) * 100) : 0;
 
   // 3. Proses Data untuk Bar Chart (History 6 Bulan Terakhir)
   const monthNames = [
@@ -79,14 +82,18 @@ const Dashboard = () => {
 
   // Masukkan data transaksi asli ke dalam bulan yang sesuai
   transactions.forEach((t) => {
+    // Pastikan tanggalnya valid sebelum diproses
+    if (!t.date) return;
+
     const tMonth = monthNames[new Date(t.date).getMonth()];
     const monthEntry = historyData.find((m) => m.name === tMonth);
+
     if (monthEntry) {
-      if (t.type === "income") monthEntry.income += t.amount;
-      if (t.type === "expense") monthEntry.expense += t.amount;
+      // Bungkus t.amount dengan parseFloat agar pasti menjadi angka bulat murni
+      if (t.type === "income") monthEntry.income += parseFloat(t.amount || 0);
+      if (t.type === "expense") monthEntry.expense += parseFloat(t.amount || 0);
     }
   });
-
   // 4. Data untuk Line Chart (Cash Flow Trend = Income - Expense per bulan)
   const cashFlowData = historyData.map((m) => ({
     name: m.name,
@@ -115,11 +122,15 @@ const Dashboard = () => {
             /* Trigger buka RightPanel sudah dihandle oleh global state sebelumnya jika Anda pindahkan ke MainLayout */
           }}
         >
-          <img
-            src={Profile}
-            alt="Profile"
-            className="w-full h-full object-cover"
-          />
+          {isAuthenticated ? (
+            <img
+              src={user.avatar}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <UserIcon className="w-full h-full object-cover" />
+          )}
         </button>
       </header>
       {/* Grid Layout untuk Konten */}
@@ -232,49 +243,6 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#ffb3c6]"></div> Expense
-            </div>
-          </div>
-        </div>
-
-        <div className="xl:col-span-5 bg-white rounded-[2rem] p-6 shadow-soft h-[300px] flex flex-col items-center">
-          <div className="flex justify-between items-center w-full mb-2">
-            <h3 className="font-bold text-gray-800">Budget Usage</h3>
-            <button className="text-gray-400 hover:text-gray-600">
-              <MoreHorizontal size={20} />
-            </button>
-          </div>
-          <div className="flex-1 w-full relative flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={efficiencyData}
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {efficiencyData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-
-            {/* Teks di tengah Donut Chart Otomatis */}
-            <div className="absolute flex flex-col items-center">
-              <span className="text-xl font-bold text-gray-800">
-                {/* Jika net income minus, tampilkan 0 atau Rp 0 */}
-                {netIncome > 0 ? formatRupiah(netIncome) : "Rp 0"}
-              </span>
-              <span
-                className={`text-[10px] font-bold px-2 py-1 rounded-md mt-1 ${efficiencyPercentage > 0 ? "text-brand-500 bg-brand-50" : "text-red-500 bg-red-50"}`}
-              >
-                {efficiencyPercentage > 0
-                  ? `+${efficiencyPercentage}%`
-                  : `${efficiencyPercentage}%`}
-              </span>
-              <span className="text-[9px] text-gray-400 mt-1">Remaining</span>
             </div>
           </div>
         </div>

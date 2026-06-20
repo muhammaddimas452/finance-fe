@@ -25,18 +25,12 @@ const TransactionModal = () => {
 
   if (!isTransactionModalOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validasi sederhana
-    if (
-      !formData.title ||
-      !formData.amount ||
-      !formData.categoryId ||
-      !formData.walletId
-    ) {
-      alert("Mohon lengkapi semua data!");
-      return;
+    if (!formData.amount || !formData.title || !formData.walletId) {
+      return alert("Mohon lengkapi nominal, judul, dan pilih dompet!");
     }
 
     // Cari nama kategori berdasarkan ID untuk disimpan
@@ -44,25 +38,33 @@ const TransactionModal = () => {
       (c) => c.id === parseInt(formData.categoryId),
     );
 
-    const newTransaction = {
+    const result = await addTransaction({
       title: formData.title,
-      amount: parseInt(formData.amount),
+      amount: formData.amount,
       type: formData.type,
-      category: selectedCategory.name,
-      walletId: parseInt(formData.walletId),
-    };
-
-    addTransaction(newTransaction);
-
-    // Reset form dan tutup modal
-    setFormData({
-      title: "",
-      amount: "",
-      type: "expense",
-      categoryId: "",
-      walletId: "",
+      category_id: formData.categoryId || null, // Sesuaikan dengan nama kolom DB
+      wallet_id: formData.walletId, // Sesuaikan dengan nama kolom DB
+      date: new Date().toISOString().split("T")[0], // Format YYYY-MM-DD
     });
-    closeTransactionModal();
+
+    if (result.success) {
+      closeTransactionModal();
+      setFormData({ amount: "", title: "", categoryId: "", walletId: "" });
+    } else {
+      alert(result.message);
+    }
+
+    //   addTransaction(newTransaction);
+
+    //   // Reset form dan tutup modal
+    //   setFormData({
+    //     title: "",
+    //     amount: "",
+    //     type: "expense",
+    //     categoryId: "",
+    //     walletId: "",
+    //   });
+    //   closeTransactionModal();
   };
 
   const handleChange = (e) => {

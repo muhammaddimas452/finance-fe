@@ -5,11 +5,20 @@ export const useUIStore = create((set) => ({
   isRightPanelOpen: false,
   isTransferModalOpen: false,
   isCategoryModalOpen: false,
+  isWalletModalOpen: false,
   categoryEditData: null,
 
   // State untuk Modal Transaksi
   isTransactionModalOpen: false,
   transactionType: "expense",
+
+  isAuthModalOpen: false,
+  authMode: "login", // 'login' atau 'register'
+
+  openAuthModal: (mode = "login") =>
+    set({ isAuthModalOpen: true, authMode: mode }),
+  closeAuthModal: () => set({ isAuthModalOpen: false }),
+  setAuthMode: (mode) => set({ authMode: mode }),
 
   // Action untuk Modal Transaksi
   openTransactionModal: (type = "expense") =>
@@ -31,4 +40,7 @@ export const useUIStore = create((set) => ({
     set({ isCategoryModalOpen: true, categoryEditData: data }),
   closeCategoryModal: () =>
     set({ isCategoryModalOpen: false, categoryEditData: null }),
+
+  openWalletModal: () => set({ isWalletModalOpen: true }),
+  closeWalletModal: () => set({ isWalletModalOpen: false }),
 }));

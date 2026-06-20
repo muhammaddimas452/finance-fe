@@ -1,13 +1,21 @@
 import { useUIStore } from "../../store/useUIStore";
-import { Menu, AlignEndHorizontal } from "lucide-react";
+import { Menu, AlignEndHorizontal, UserIcon } from "lucide-react";
 import Sidebar from "./Sidebar";
 import RightPanel from "./RightPanel";
 import TransactionModal from "../ui/TransactionModal";
 import Profile from "../../assets/profile.JPEG";
 import TransferModal from "../ui/TransferModal";
 import CategoryModal from "../ui/CategoryModal";
+import AuthModal from "../ui/AuthModal";
+import { useAuthStore } from "../../store/useAuthStore";
+import { useEffect } from "react";
+import { Outlet } from "react-router-dom";
+import WalletModal from "../ui/WalletModal";
 
-const MainLayout = ({ children }) => {
+// Import Store
+import { useFinanceStore } from "../../store/useFinanceStore";
+
+function MainLayout({ children }) {
   const {
     isMobileMenuOpen,
     isRightPanelOpen,
@@ -15,8 +23,17 @@ const MainLayout = ({ children }) => {
     setIsRightPanelOpen,
   } = useUIStore();
 
-  console.log(typeof setIsMobileMenuOpen);
-  console.log(typeof setIsRightPanelOpen);
+  const { fetchInitialData, clearData } = useFinanceStore();
+  const { isAuthenticated, user } = useAuthStore();
+
+  // Efek otomatis untuk mengambil data saat login
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchInitialData();
+    } else {
+      clearData(); // Bersihkan data jika tidak login
+    }
+  }, [isAuthenticated, fetchInitialData, clearData]);
 
   return (
     // Background luar: padding hilang di mobile agar full screen
@@ -24,6 +41,8 @@ const MainLayout = ({ children }) => {
       <TransactionModal />
       <TransferModal />
       <CategoryModal />
+      <AuthModal />
+      <WalletModal />
       {/* Container Aplikasi: border-radius dan height disesuaikan untuk mobile */}
       <div className="bg-white w-full max-w-[1400px] h-screen md:h-[90vh] md:min-h-[700px] rounded-none md:rounded-[2.5rem] shadow-none md:shadow-soft flex overflow-hidden border-none md:border border-white/50 relative">
         {/* Mobile Header (Hanya muncul di layar kecil) */}
@@ -49,11 +68,15 @@ const MainLayout = ({ children }) => {
             onClick={() => setIsRightPanelOpen(true)}
             className="w-10 h-10 rounded-full overflow-hidden shadow-sm"
           >
-            <img
-              src={Profile}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
+            {isAuthenticated ? (
+              <img
+                src={user.avatar}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <UserIcon size={32} className="w-full h-full object-cover" />
+            )}
           </button>
         </div>
         {/* Kolom 1: Sidebar Kiri (Passing state untuk mobile) */}
@@ -82,6 +105,6 @@ const MainLayout = ({ children }) => {
       </div>
     </div>
   );
-};
+}
 
 export default MainLayout;

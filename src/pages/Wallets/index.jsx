@@ -1,9 +1,11 @@
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
 import { Plus, Wallet, CreditCard, Smartphone } from "lucide-react";
+import { useUIStore } from "../../store/useUIStore";
 
 const Wallets = () => {
   const { wallets } = useFinanceStore();
+  const { openWalletModal } = useUIStore();
 
   const getIcon = (iconName) => {
     switch (iconName) {
@@ -24,7 +26,10 @@ const Wallets = () => {
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
           My Wallets
         </h1>
-        <button className="flex items-center cursor-pointer gap-2 bg-purple-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg shadow-brand-500/20">
+        <button
+          onClick={openWalletModal}
+          className="flex items-center cursor-pointer gap-2 bg-purple-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg shadow-brand-500/20"
+        >
           <Plus size={18} /> Add Wallet
         </button>
       </header>

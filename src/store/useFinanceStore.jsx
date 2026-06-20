@@ -1,198 +1,221 @@
 import { create } from "zustand";
+import api from "../lib/axios";
 
 export const useFinanceStore = create((set) => ({
-  // Data Awal (Dummy untuk pengembangan)
-  wallets: [
-    { id: 1, name: "Tunai", balance: 500000, icon: "Wallet" },
-    { id: 2, name: "Bank BCA", balance: 15250000, icon: "CreditCard" },
-    { id: 3, name: "GoPay", balance: 750000, icon: "Smartphone" },
-  ],
+  // 1. Kosongkan semua data dummy menjadi array kosong
+  wallets: [],
+  categories: [],
+  transactions: [],
+  savings: [], // Opsional jika fitur ini akan diaktifkan nanti
+  isLoading: false,
 
-  categories: [
-    { id: 1, name: "Makanan", type: "expense", icon: "Utensils" },
-    { id: 2, name: "Gaji", type: "income", icon: "Banknote" },
-    { id: 3, name: "Transportasi", type: "expense", icon: "Car" },
-    { id: 4, name: "Hiburan", type: "expense", icon: "Gamepad" },
-    { id: 5, name: "Penginapan", type: "expense", icon: "House" },
-    { id: 6, name: "Pendidikan", type: "expense", icon: "Book" },
-  ],
+  // 2. Fungsi untuk mengambil semua data awal dari API
+  fetchInitialData: async () => {
+    set({ isLoading: true });
+    try {
+      // Mengambil data secara paralel agar lebih cepat
+      const [walletsRes, categoriesRes, transactionsRes] = await Promise.all([
+        api.get("/wallets"),
+        api.get("/categories"),
+        api.get("/transactions"),
+      ]);
 
-  transactions: [
-    {
-      id: 1,
-      title: "Makan Siang Bakso",
-      amount: 25000,
-      type: "expense",
-      category: "Makanan",
-      walletId: 1,
-      date: new Date().toISOString(),
-    },
-    {
-      id: 2,
-      title: "Gaji Pokok",
-      amount: 8000000,
-      type: "income",
-      category: "Gaji",
-      walletId: 2,
-      date: new Date().toISOString(),
-    },
-  ],
+      set({
+        wallets: walletsRes.data,
+        categories: categoriesRes.data,
+        transactions: transactionsRes.data,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error("Gagal mengambil data dari server:", error);
+      set({ isLoading: false });
+    }
+  },
 
-  // Tambahkan di dalam useFinanceStore.js
-  budgets: [
-    { id: 1, categoryId: 1, limit: 1500000 }, // Contoh: Makanan limit 1.5jt
-    { id: 2, categoryId: 3, limit: 500000 }, // Contoh: Transport limit 500rb
-  ],
+  // 3. Reset data saat logout
+  clearData: () =>
+    set({
+      wallets: [],
+      categories: [],
+      transactions: [],
+    }),
 
   // --- ACTIONS ---
 
-  // Menambah Transaksi Baru
-  addTransaction: (newTransaction) =>
-    set((state) => {
-      const updatedTransactions = [
-        { ...newTransaction, id: Date.now(), date: new Date().toISOString() },
-        ...state.transactions,
-      ];
-
-      // Update Saldo Dompet Otomatis
-      const updatedWallets = state.wallets.map((wallet) => {
-        if (wallet.id === newTransaction.walletId) {
-          return {
-            ...wallet,
-            balance:
-              newTransaction.type === "income"
-                ? wallet.balance + newTransaction.amount
-                : wallet.balance - newTransaction.amount,
-          };
-        }
-        return wallet;
-      });
-
-      return {
-        transactions: updatedTransactions,
-        wallets: updatedWallets,
-      };
-    }),
-
-  // Menghapus Transaksi
-  deleteTransaction: (id) =>
-    set((state) => {
-      const transactionToDelete = state.transactions.find((t) => t.id === id);
-      if (!transactionToDelete) return state;
-
-      // Update Saldo Dompet Otomatis
-      const updatedWallets = state.wallets.map((wallet) => {
-        if (wallet.id === transactionToDelete.walletId) {
-          return {
-            ...wallet,
-            balance:
-              transactionToDelete.type === "income"
-                ? wallet.balance - transactionToDelete.amount
-                : wallet.balance + transactionToDelete.amount,
-          };
-        }
-        return wallet;
-      });
-
-      return {
-        transactions: state.transactions.filter((t) => t.id !== id),
-        wallets: updatedWallets,
-      };
-    }),
-
-  // Action untuk mengatur budget
-  setBudget: (categoryId, limit) =>
-    set((state) => {
-      const existingBudget = state.budgets.find(
-        (b) => b.categoryId === categoryId,
-      );
-      if (existingBudget) {
-        return {
-          budgets: state.budgets.map((b) =>
-            b.categoryId === categoryId ? { ...b, limit } : b,
-          ),
-        };
-      }
-      return {
-        budgets: [...state.budgets, { id: Date.now(), categoryId, limit }],
-      };
-    }),
-
-  // Helper untuk mendapatkan persentase penggunaan (bisa dipanggil di komponen)
-  getBudgetUsage: (categoryId) => {
-    const state = useFinanceStore.getState();
-    const budget = state.budgets.find((b) => b.categoryId === categoryId);
-    if (!budget) return null;
-
-    const currentMonth = new Date().getMonth();
-    const totalSpent = state.transactions
-      .filter(
-        (t) =>
-          t.type === "expense" &&
-          new Date(t.date).getMonth() === currentMonth &&
-          state.categories.find((c) => c.name === t.category)?.id ===
-            categoryId,
-      )
-      .reduce((acc, t) => acc + t.amount, 0);
-
-    return {
-      limit: budget.limit,
-      spent: totalSpent,
-      percentage: Math.min((totalSpent / budget.limit) * 100, 100),
-      isOver: totalSpent > budget.limit,
-    };
+  // 1. Tambah Dompet
+  addWallet: async (walletData) => {
+    try {
+      const response = await api.post("/wallets", walletData);
+      set((state) => ({
+        wallets: [...state.wallets, response.data.wallet],
+      }));
+      return { success: true };
+    } catch (error) {
+      console.error("Error addWallet:", error);
+      return { success: false, message: "Gagal membuat dompet baru" };
+    }
   },
 
-  // Action untuk melakukan transfer antar dompet
-  transfer: (transferData) =>
-    set((state) => {
-      const { fromWalletId, toWalletId, amount } = transferData;
-      const numAmount = parseInt(amount);
+  // --- UPDATE DOMPET ---
+  updateWallet: async (id, updatedData) => {
+    try {
+      await api.put(`/wallets/${id}`, updatedData);
 
-      // 1. Update Saldo Dompet
-      const updatedWallets = state.wallets.map((wallet) => {
-        if (wallet.id === fromWalletId)
-          return { ...wallet, balance: wallet.balance - numAmount };
-        if (wallet.id === toWalletId)
-          return { ...wallet, balance: wallet.balance + numAmount };
-        return wallet;
+      const store = useFinanceStore.getState();
+      await store.fetchInitialData();
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updateWallet:", error);
+      return { success: false, message: "Gagal memperbarui dompet" };
+    }
+  },
+
+  // --- HAPUS DOMPET ---
+  deleteWallet: async (id) => {
+    try {
+      await api.delete(`/wallets/${id}`);
+
+      const store = useFinanceStore.getState();
+      await store.fetchInitialData();
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleteWallet:", error);
+      return { success: false, message: "Gagal menghapus dompet" };
+    }
+  },
+
+  // 2. Tambah Kategori
+  addCategory: async (categoryData) => {
+    try {
+      const response = await api.post("/categories", categoryData);
+      set((state) => ({
+        categories: [...state.categories, response.data.category],
+      }));
+      return { success: true };
+    } catch (error) {
+      console.error("Error addCategory:", error);
+      return { success: false, message: "Gagal membuat kategori" };
+    }
+  },
+
+  deleteCategory: async (id) => {
+    try {
+      await api.delete(`/categories/${id}`);
+      set((state) => ({
+        categories: state.categories.filter((c) => c.id !== id),
+      }));
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleteCategory:", error);
+      return { success: false, message: "Gagal menghapus kategori" };
+    }
+  },
+
+  // --- UPDATE KATEGORI ---
+  updateCategory: async (id, updatedData) => {
+    try {
+      const response = await api.put(`/categories/${id}`, updatedData);
+      set((state) => ({
+        categories: state.categories.map((c) =>
+          c.id === id ? response.data.category : c,
+        ),
+      }));
+      return { success: true };
+    } catch (error) {
+      console.error("Error updateCategory:", error);
+      return { success: false, message: "Gagal memperbarui kategori" };
+    }
+  },
+
+  // 3. Tambah Transaksi
+  addTransaction: async (transactionData) => {
+    try {
+      const response = await api.post("/transactions", transactionData);
+      const newTransaction = response.data.transaction;
+
+      // Update state: Tambahkan transaksi ke list & sesuaikan saldo dompet di Frontend
+      set((state) => {
+        const updatedWallets = state.wallets.map((w) => {
+          if (w.id === parseInt(newTransaction.wallet_id)) {
+            const amount = parseFloat(newTransaction.amount);
+            return {
+              ...w,
+              balance:
+                newTransaction.type === "income"
+                  ? parseFloat(w.balance) + amount
+                  : parseFloat(w.balance) - amount,
+            };
+          }
+          return w;
+        });
+
+        return {
+          transactions: [newTransaction, ...state.transactions],
+          wallets: updatedWallets,
+        };
+      });
+      return { success: true };
+    } catch (error) {
+      console.error("Error addTransaction:", error);
+      return { success: false, message: "Gagal mencatat transaksi" };
+    }
+  },
+
+  // --- HAPUS TRANSAKSI ---
+  deleteTransaction: async (id) => {
+    try {
+      // 1. Kirim perintah hapus ke Laravel
+      await api.delete(`/transactions/${id}`);
+
+      // 2. Karena penghapusan transaksi juga mengubah saldo dompet di database,
+      // cara paling aman dan akurat adalah menarik ulang data terbaru dari server.
+      const store = useFinanceStore.getState();
+      await store.fetchInitialData();
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleteTransaction:", error);
+      return { success: false, message: "Gagal menghapus transaksi" };
+    }
+  },
+
+  // --- UPDATE TRANSAKSI ---
+  updateTransaction: async (id, updatedData) => {
+    try {
+      await api.put(`/transactions/${id}`, updatedData);
+
+      // Tarik ulang data agar saldo dompet dan grafik otomatis menyesuaikan
+      const store = useFinanceStore.getState();
+      await store.fetchInitialData();
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updateTransaction:", error);
+      return { success: false, message: "Gagal memperbarui transaksi" };
+    }
+  },
+
+  // --- TRANSFER ---
+  transfer: async (transferData) => {
+    try {
+      // 1. Kirim request ke Laravel
+      await api.post("/wallets/transfer", {
+        from_wallet_id: transferData.fromWalletId,
+        to_wallet_id: transferData.toWalletId,
+        amount: transferData.amount,
       });
 
-      // 2. Catat sebagai transaksi khusus tipe 'transfer'
-      const fromWallet = state.wallets.find((w) => w.id === fromWalletId);
-      const toWallet = state.wallets.find((w) => w.id === toWalletId);
+      // 2. Ambil ulang data dari server untuk memastikan sinkronisasi 100% akurat
+      // Karena transfer mengubah 2 dompet dan 1 histori transaksi sekaligus
+      const store = useFinanceStore.getState();
+      await store.fetchInitialData();
 
-      const newTransaction = {
-        id: Date.now(),
-        title: `Transfer: ${fromWallet.name} ➔ ${toWallet.name}`,
-        amount: numAmount,
-        type: "transfer",
-        category: "Transfer",
-        walletId: fromWalletId, // Kita catat di dompet asal
-        date: new Date().toISOString(),
-      };
-
-      return {
-        wallets: updatedWallets,
-        transactions: [newTransaction, ...state.transactions],
-      };
-    }),
-
-  // Actions untuk manajemen kategori
-  addCategory: (newCategory) =>
-    set((state) => ({
-      categories: [...state.categories, { ...newCategory, id: Date.now() }],
-    })),
-
-  updateCategory: (id, updatedData) =>
-    set((state) => ({
-      categories: state.categories.map((c) =>
-        c.id === id ? { ...c, ...updatedData } : c,
-      ),
-    })),
-
-  deleteCategory: (id) =>
-    set((state) => ({
-      categories: state.categories.filter((c) => c.id !== id),
-    })),
+      return { success: true };
+    } catch (error) {
+      console.error("Error transfer:", error);
+      return { success: false, message: "Gagal melakukan transfer" };
+    }
+  },
 }));

@@ -10,19 +10,27 @@ const TransferModal = () => {
 
   if (!isTransferModalOpen) return null;
 
-  const handleTransfer = (e) => {
+  const handleTransfer = async (e) => {
+    // <-- Tambahkan async
     e.preventDefault();
     if (!data.from || !data.to || !data.amount || data.from === data.to) {
       alert("Pilih dompet yang berbeda dan isi nominal!");
       return;
     }
-    transfer({
+
+    // Gunakan await
+    const result = await transfer({
       fromWalletId: parseInt(data.from),
       toWalletId: parseInt(data.to),
       amount: data.amount,
     });
-    closeTransferModal();
-    setData({ from: "", to: "", amount: "" });
+
+    if (result.success) {
+      closeTransferModal();
+      setData({ from: "", to: "", amount: "" });
+    } else {
+      alert(result.message);
+    }
   };
 
   return (

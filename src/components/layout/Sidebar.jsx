@@ -43,30 +43,25 @@ const Sidebar = () => {
       active: false,
       path: "/finance-fe/categories",
     }, // MVP
-    {
-      name: "Budgets",
-      icon: Target,
-      active: false,
-      path: "/finance-fe/budgets",
-    }, // Menengah
-    {
-      name: "Debts",
-      icon: HandCoins,
-      active: false,
-      path: "/finance-fe/debts",
-    }, // Menengah
-    {
-      name: "Reports",
-      icon: PieChart,
-      active: false,
-      path: "/finance-fe/reports",
-    }, // Menengah
-    {
-      name: "Savings Goals",
-      icon: PiggyBank,
-      active: false,
-      path: "/finance-fe/savings",
-    }, // Lanjutan
+
+    // {
+    //   name: "Debts",
+    //   icon: HandCoins,
+    //   active: false,
+    //   path: "/finance-fe/debts",
+    // }, // Menengah
+    // {
+    //   name: "Reports",
+    //   icon: PieChart,
+    //   active: false,
+    //   path: "/finance-fe/reports",
+    // }, // Menengah
+    // {
+    //   name: "Savings Goals",
+    //   icon: PiggyBank,
+    //   active: false,
+    //   path: "/finance-fe/savings",
+    // }, // Lanjutan
   ];
 
   return (

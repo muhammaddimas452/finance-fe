@@ -5,11 +5,15 @@ import {
   TrendingDown,
   ArrowRightLeft,
   FilePlus,
+  LogOut,
+  LogIn,
+  UserIcon,
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore"; // Import store
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
 import Profile from "../../assets/profile.JPEG";
+import { useAuthStore } from "../../store/useAuthStore";
 
 const RightPanel = () => {
   const {
@@ -17,8 +21,11 @@ const RightPanel = () => {
     setIsRightPanelOpen,
     openTransactionModal,
     openTransferModal,
+    openAuthModal,
   } = useUIStore();
   const { transactions } = useFinanceStore();
+
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   // Ambil 5 transaksi terbaru saja
   const latestTransactions = transactions.slice(0, 5);
@@ -84,14 +91,41 @@ const RightPanel = () => {
 
       {/* Profile */}
       <div className="flex flex-col items-center">
-        <img
-          src={Profile}
-          alt="Profile"
-          className="w-20 h-20 rounded-full mb-3 shadow-md border-4 border-white"
-        />
-        <h3 className="font-bold text-lg text-gray-800">
-          M Dimas Wakhid Wijaya
-        </h3>
+        {isAuthenticated ? (
+          <>
+            <img
+              src={user.avatar}
+              alt="Profile"
+              className="w-20 h-20 rounded-full mb-3 shadow-md border-4 border-white object-cover"
+            />
+            <h3 className="font-bold text-lg text-gray-800">{user.name}</h3>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-xs text-gray-400 font-medium bg-gray-50 px-3 py-1 rounded-full">
+                Free Plan
+              </span>
+              <button
+                onClick={logout}
+                className="p-1.5 text-red-500 bg-red-50 rounded-full hover:bg-red-100 transition-colors"
+                title="Logout"
+              >
+                <LogOut size={14} />
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="w-20 h-20 rounded-full mb-3 shadow-md border-4 border-white bg-gray-100 flex items-center justify-center text-gray-400">
+              <UserIcon size={32} />
+            </div>
+            <h3 className="font-bold text-lg text-gray-800 mb-2">Guest</h3>
+            <button
+              onClick={() => openAuthModal("login")}
+              className="flex items-center gap-2 bg-purple-600 cursor-pointer hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-md shadow-brand-500/20 hover:bg-brand-600 transition-colors"
+            >
+              <LogIn size={14} /> Login to Mooney
+            </button>
+          </>
+        )}
       </div>
 
       {/* Quick Actions */}
@@ -144,7 +178,7 @@ const RightPanel = () => {
                     {trx.title}
                   </p>
                   <p className="text-[10px] text-gray-400 font-medium">
-                    {trx.category}
+                    {trx.category?.name || "Tanpa Kategori"}
                   </p>
                 </div>
               </div>

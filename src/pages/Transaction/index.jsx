@@ -112,7 +112,7 @@ const Transactions = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">
-                      {t.category}
+                      {t.category?.name || "Transfer"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                       {new Date(t.date).toLocaleDateString("id-ID", {

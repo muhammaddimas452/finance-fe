@@ -24,16 +24,21 @@ const CategoryModal = () => {
 
   if (!isCategoryModalOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name) return alert("Nama kategori tidak boleh kosong!");
 
     if (categoryEditData) {
       updateCategory(categoryEditData.id, { name, type });
+      closeCategoryModal();
     } else {
-      addCategory({ name, type });
+      const result = await addCategory({ name, type });
+      if (result.success) {
+        closeCategoryModal();
+      } else {
+        alert(result.message);
+      }
     }
-    closeCategoryModal();
   };
 
   return (
@@ -88,7 +93,7 @@ const CategoryModal = () => {
             />
           </div>
 
-          <button className="w-full bg-brand-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-brand-500/30 hover:bg-brand-600 transition-all mt-2">
+          <button className="w-full bg-purple-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-brand-500/30 hover:bg-brand-600 transition-all mt-2">
             {categoryEditData ? "Simpan Perubahan" : "Buat Kategori"}
           </button>
         </form>
