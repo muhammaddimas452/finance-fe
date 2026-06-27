@@ -10,7 +10,7 @@ const BalanceCard = () => {
   }, 0);
 
   return (
-    <div className="bg-brand-500 rounded-[2rem] p-6 bg-purple-600 text-white shadow-xl shadow-brand-500/40 flex flex-col justify-between h-full relative overflow-hidden">
+    <div className="bg-brand-500 rounded-[2rem] p-6 bg-gradient-to-br from-[#5b58ff] to-[#8a88ff] text-white shadow-xl shadow-brand-500/40 flex flex-col justify-between h-full relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl"></div>
 
       <div className="relative z-10 flex justify-between items-start mb-6">

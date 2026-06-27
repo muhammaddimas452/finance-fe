@@ -13,10 +13,13 @@ import {
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore"; // Import store
 import { Link, useLocation } from "react-router-dom";
+import { useFinanceStore } from "../../store/useFinanceStore";
+import { downloadPDF } from "../../utils/exportData";
 
 const Sidebar = () => {
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useUIStore();
   const location = useLocation();
+  const { transactions } = useFinanceStore();
 
   const menuItems = [
     {
@@ -127,8 +130,11 @@ const Sidebar = () => {
         <h4 className="font-semibold text-gray-800 text-sm mb-1">
           Export Data
         </h4>
-        <p className="text-xs text-gray-500 mb-4">Download Excel/PDF</p>
-        <button className="w-full bg-brand-500 text-black text-sm font-medium py-3 rounded-2xl hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/30">
+        <p className="text-xs text-gray-500 mb-4">Download PDF</p>
+        <button
+          onClick={() => downloadPDF(transactions)}
+          className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white text-sm font-medium py-3 rounded-2xl cursor-pointer transition-colors shadow-lg shadow-brand-500/30"
+        >
           Export Now
         </button>
       </div>

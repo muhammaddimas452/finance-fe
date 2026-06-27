@@ -22,10 +22,11 @@ const RightPanel = () => {
     openTransactionModal,
     openTransferModal,
     openAuthModal,
+    openLogoutModal,
   } = useUIStore();
   const { transactions } = useFinanceStore();
 
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
   // Ambil 5 transaksi terbaru saja
   const latestTransactions = transactions.slice(0, 5);
@@ -36,7 +37,8 @@ const RightPanel = () => {
       icon: TrendingUp,
       color: "text-green-500",
       bg: "bg-green-50",
-      hover: "hover:bg-green-500",
+      // Tulis utuh menggunakan awalan group-hover
+      hover: "group-hover:bg-green-500 group-hover:text-white",
       onClick: () => openTransactionModal("income"),
     },
     {
@@ -44,7 +46,7 @@ const RightPanel = () => {
       icon: TrendingDown,
       color: "text-red-500",
       bg: "bg-red-50",
-      hover: "hover:bg-red-500",
+      hover: "group-hover:bg-red-500 group-hover:text-white",
       onClick: () => openTransactionModal("expense"),
     },
     {
@@ -52,15 +54,15 @@ const RightPanel = () => {
       icon: ArrowRightLeft,
       color: "text-blue-500",
       bg: "bg-blue-50",
-      hover: "hover:bg-blue-500",
+      hover: "group-hover:bg-blue-500 group-hover:text-white",
       onClick: () => openTransferModal(),
     },
     {
       name: "Bill",
       icon: FilePlus,
-      color: " texst-orange-500",
+      color: "text-orange-500",
       bg: "bg-orange-50",
-      hover: "hover:bg-orange-500",
+      hover: "group-hover:bg-orange-500 group-hover:text-white",
       onClick: () => alert("Fitur Tagihan akan segera hadir!"),
     },
   ];
@@ -104,7 +106,7 @@ const RightPanel = () => {
                 Free Plan
               </span>
               <button
-                onClick={logout}
+                onClick={openLogoutModal}
                 className="p-1.5 text-red-500 bg-red-50 rounded-full hover:bg-red-100 transition-colors"
                 title="Logout"
               >
@@ -120,7 +122,7 @@ const RightPanel = () => {
             <h3 className="font-bold text-lg text-gray-800 mb-2">Guest</h3>
             <button
               onClick={() => openAuthModal("login")}
-              className="flex items-center gap-2 bg-purple-600 cursor-pointer hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-md shadow-brand-500/20 hover:bg-brand-600 transition-colors"
+              className="flex items-center gap-2 bg-[#5b58ff] hover:bg-[#4a47e6] cursor-pointer text-white text-xs font-bold px-4 py-2 rounded-full shadow-md shadow-brand-500/20 transition-colors"
             >
               <LogIn size={14} /> Login to Mooney
             </button>
@@ -137,7 +139,7 @@ const RightPanel = () => {
             className="flex flex-col items-center gap-2 cursor-pointer group"
           >
             <div
-              className={`w-12 h-12 rounded-2xl ${action.bg} flex items-center justify-center ${action.color} group-${action.hover} group-hover:text-white transition-colors`}
+              className={`w-12 h-12 rounded-2xl ${action.bg} flex items-center justify-center ${action.color} ${action.hover}`}
             >
               <action.icon size={18} />
             </div>
@@ -161,7 +163,7 @@ const RightPanel = () => {
           {latestTransactions.map((trx) => (
             <div
               key={trx.id}
-              className="flex items-center justify-between group cursor-pointer"
+              className="flex items-center justify-between group"
             >
               <div className="flex items-center gap-3">
                 <div

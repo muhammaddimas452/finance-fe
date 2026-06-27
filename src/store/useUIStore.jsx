@@ -7,6 +7,7 @@ export const useUIStore = create((set) => ({
   isCategoryModalOpen: false,
   isWalletModalOpen: false,
   categoryEditData: null,
+  walletEditData: null, // Tambahkan penampung data ini
 
   // State untuk Modal Transaksi
   isTransactionModalOpen: false,
@@ -14,6 +15,7 @@ export const useUIStore = create((set) => ({
 
   isAuthModalOpen: false,
   authMode: "login", // 'login' atau 'register'
+  isLogoutModalOpen: false,
 
   openAuthModal: (mode = "login") =>
     set({ isAuthModalOpen: true, authMode: mode }),
@@ -41,6 +43,20 @@ export const useUIStore = create((set) => ({
   closeCategoryModal: () =>
     set({ isCategoryModalOpen: false, categoryEditData: null }),
 
-  openWalletModal: () => set({ isWalletModalOpen: true }),
-  closeWalletModal: () => set({ isWalletModalOpen: false }),
+  // Ubah fungsi open agar bisa menerima data (opsional)
+  openWalletModal: (data = null) =>
+    set({
+      isWalletModalOpen: true,
+      walletEditData: data,
+    }),
+
+  // Pastikan data dikosongkan lagi saat modal ditutup
+  closeWalletModal: () =>
+    set({
+      isWalletModalOpen: false,
+      walletEditData: null,
+    }),
+
+  openLogoutModal: () => set({ isLogoutModalOpen: true }),
+  closeLogoutModal: () => set({ isLogoutModalOpen: false }),
 }));
