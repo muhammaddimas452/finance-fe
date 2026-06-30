@@ -12,6 +12,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import WalletModal from "../ui/WalletModal";
+import ProfileModal from "../ui/ProfileModal";
 
 // Import Store
 import { useFinanceStore } from "../../store/useFinanceStore";
@@ -45,6 +46,7 @@ function MainLayout({ children }) {
       <AuthModal />
       <WalletModal />
       <LogoutModal />
+      <ProfileModal />
       {/* Container Aplikasi: border-radius dan height disesuaikan untuk mobile */}
       <div className="bg-white w-full max-w-[1400px] h-screen md:h-[90vh] md:min-h-[700px] rounded-none md:rounded-[2.5rem] shadow-none md:shadow-soft flex overflow-hidden border-none md:border border-white/50 relative">
         {/* Mobile Header (Hanya muncul di layar kecil) */}

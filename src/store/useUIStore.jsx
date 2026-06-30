@@ -16,6 +16,30 @@ export const useUIStore = create((set) => ({
   isAuthModalOpen: false,
   authMode: "login", // 'login' atau 'register'
   isLogoutModalOpen: false,
+  isProfileModalOpen: false,
+
+  isDarkMode: localStorage.getItem("theme") === "dark",
+
+  // Fungsi untuk mengganti mode
+  toggleDarkMode: () =>
+    set((state) => {
+      const newTheme = !state.isDarkMode;
+
+      // Simpan preferensi ke local storage
+      localStorage.setItem("theme", newTheme ? "dark" : "light");
+
+      // Langsung tembak class 'dark' ke tag <html> tertinggi di browser
+      if (newTheme) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+
+      return { isDarkMode: newTheme };
+    }),
+
+  openProfileModal: () => set({ isProfileModalOpen: true }),
+  closeProfileModal: () => set({ isProfileModalOpen: false }),
 
   openAuthModal: (mode = "login") =>
     set({ isAuthModalOpen: true, authMode: mode }),

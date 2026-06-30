@@ -32,13 +32,13 @@ const Wallets = () => {
     <div className="flex flex-col h-full animate-in fade-in duration-300">
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          My Wallets
+          Dompet Saya
         </h1>
         <button
           onClick={() => openWalletModal()}
           className="flex items-center cursor-pointer gap-2 bg-[#5b58ff] hover:bg-[#4a47e6] transition-colors text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-[#5b58ff]/30"
         >
-          <Plus size={18} /> Add Wallet
+          <Plus size={18} /> Tambah Dompet
         </button>
       </header>
 

@@ -135,7 +135,7 @@ const Sidebar = () => {
           onClick={() => downloadPDF(transactions)}
           className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white text-sm font-medium py-3 rounded-2xl cursor-pointer transition-colors shadow-lg shadow-brand-500/30"
         >
-          Export Now
+          Export
         </button>
       </div>
     </aside>

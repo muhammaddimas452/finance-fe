@@ -54,4 +54,33 @@ export const useAuthStore = create((set) => ({
       set({ user: null, isAuthenticated: false });
     }
   },
+
+  updateProfile: async (formData) => {
+    try {
+      // 1. Gunakan 'api' kustom Anda, bukan 'axios'
+      const response = await api.post("/profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const updatedUser = {
+        ...useAuthStore.getState().user,
+        ...response.data.user,
+      };
+
+      // 2. Update state Zustand agar UI langsung berubah
+      set({ user: updatedUser });
+
+      // 3. Update localStorage agar data profil baru tidak hilang saat web di-refresh
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Gagal memperbarui profil.",
+      };
+    }
+  },
 }));

@@ -8,6 +8,8 @@ import {
   LogOut,
   LogIn,
   UserIcon,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore"; // Import store
 import { useFinanceStore } from "../../store/useFinanceStore";
@@ -23,6 +25,9 @@ const RightPanel = () => {
     openTransferModal,
     openAuthModal,
     openLogoutModal,
+    // isDarkMode,
+    // toggleDarkMode,
+    openProfileModal,
   } = useUIStore();
   const { transactions } = useFinanceStore();
 
@@ -83,9 +88,15 @@ const RightPanel = () => {
         >
           <X size={20} />
         </button>
-
+        {/* <button
+          onClick={toggleDarkMode}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-400 transition-colors"
+          title={isDarkMode ? "Matikan Mode Gelap" : "Nyalakan Mode Gelap"}
+        >
+          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </button> */}
         <div className="flex gap-3 ml-auto">
-          <button className="hover:text-gray-700">
+          <button onClick={openProfileModal} className="hover:text-gray-700">
             <Settings size={20} />
           </button>
         </div>
