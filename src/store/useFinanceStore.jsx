@@ -32,6 +32,23 @@ export const useFinanceStore = create((set) => ({
     }
   },
 
+  setPrimaryWallet: async (walletId) => {
+    try {
+      const response = await api.patch(`/wallets/${walletId}/set-primary`);
+
+      // Update state wallets dengan data terbaru dari server
+      set({ wallets: response.data.wallets });
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Gagal mengubah dompet utama.",
+      };
+    }
+  },
+
   // 3. Reset data saat logout
   clearData: () =>
     set({

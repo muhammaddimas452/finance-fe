@@ -8,11 +8,12 @@ import {
   Smartphone,
   Edit2,
   Trash2,
+  Star,
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 
 const Wallets = () => {
-  const { wallets, deleteWallet } = useFinanceStore();
+  const { wallets, deleteWallet, setPrimaryWallet } = useFinanceStore();
   const { openWalletModal } = useUIStore();
 
   const getIcon = (iconName) => {
@@ -28,6 +29,12 @@ const Wallets = () => {
     }
   };
 
+  const handleSetPrimary = async (walletId) => {
+    const result = await setPrimaryWallet(walletId);
+    if (!result?.success) {
+      alert(result?.message || "Gagal mengubah dompet utama.");
+    }
+  };
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-300">
       <header className="flex justify-between items-center mb-8">
@@ -61,6 +68,26 @@ const Wallets = () => {
 
               {/* 4. Tombol Aksi (Muncul halus saat di-hover) */}
               <div className="flex gap-2 opacity-100 translate-x-4">
+                <button
+                  onClick={() => handleSetPrimary(w.id)}
+                  disabled={w.is_primary} // Tidak bisa diklik jika sudah utama
+                  className={`p-2.5 rounded-xl backdrop-blur-md border transition-colors ${
+                    w.is_primary
+                      ? "bg-yellow-400/30 border-yellow-400/50 text-yellow-300 cursor-not-allowed"
+                      : "bg-white/20 hover:bg-white/40 border-white/10 text-white cursor-pointer"
+                  }`}
+                  title={
+                    w.is_primary
+                      ? "Ini adalah Dompet Utama"
+                      : "Jadikan Dompet Utama"
+                  }
+                >
+                  <Star
+                    size={16}
+                    fill={w.is_primary ? "currentColor" : "none"}
+                  />
+                </button>
+
                 <button
                   onClick={() => openWalletModal(w)} // <--- Mengirim data dompet (w) ke modal
                   className="p-2.5 bg-white/20 hover:bg-white/40 border border-white/10 rounded-xl backdrop-blur-md transition-colors"
