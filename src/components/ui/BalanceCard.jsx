@@ -9,6 +9,8 @@ const BalanceCard = () => {
     return total + parseFloat(wallet.balance || 0);
   }, 0);
 
+  const primaryWallet = wallets.find((w) => w.is_primary) || wallets[0] || null;
+
   return (
     <div className="bg-brand-500 rounded-[2rem] p-6 bg-gradient-to-br from-[#5b58ff] to-[#8a88ff] text-white shadow-xl shadow-brand-500/40 flex flex-col justify-between h-full relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl"></div>
@@ -35,12 +37,14 @@ const BalanceCard = () => {
         <div className="flex justify-between items-end">
           <div>
             <p className="font-semibold text-sm">
-              {wallets[1]?.name || "Bank Account"}
+              {primaryWallet ? primaryWallet.name : "Belum Ada Dompet"}
             </p>
           </div>
           <div className="text-right">
             <p className="font-bold text-sm">
-              {formatRupiah(wallets[1]?.balance || 0)}
+              {primaryWallet
+                ? formatRupiah(primaryWallet.balance)
+                : formatRupiah(0)}
             </p>
           </div>
         </div>

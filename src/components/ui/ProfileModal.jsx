@@ -23,6 +23,7 @@ const ProfileModal = () => {
   // Isi otomatis form saat modal dibuka
   useEffect(() => {
     if (user && isProfileModalOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: user.name || "",
         email: user.email || "",
