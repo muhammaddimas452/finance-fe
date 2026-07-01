@@ -18,24 +18,13 @@ export const useUIStore = create((set) => ({
   isLogoutModalOpen: false,
   isProfileModalOpen: false,
 
-  isDarkMode: localStorage.getItem("theme") === "dark",
+  isBalanceHidden: JSON.parse(localStorage.getItem("hide_balance")) || false,
 
-  // Fungsi untuk mengganti mode
-  toggleDarkMode: () =>
+  toggleHideBalance: () =>
     set((state) => {
-      const newTheme = !state.isDarkMode;
-
-      // Simpan preferensi ke local storage
-      localStorage.setItem("theme", newTheme ? "dark" : "light");
-
-      // Langsung tembak class 'dark' ke tag <html> tertinggi di browser
-      if (newTheme) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-
-      return { isDarkMode: newTheme };
+      const newValue = !state.isBalanceHidden;
+      localStorage.setItem("hide_balance", JSON.stringify(newValue));
+      return { isBalanceHidden: newValue };
     }),
 
   openProfileModal: () => set({ isProfileModalOpen: true }),

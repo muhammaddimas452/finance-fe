@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+// Ikon User sudah ter-import di sini, jadi kita bisa langsung menggunakannya
 import { X, User, Lock, Mail, Camera } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -9,7 +10,6 @@ const ProfileModal = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // 1. Tambahkan referensi dan state untuk urusan foto
   const fileInputRef = useRef(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
@@ -20,7 +20,6 @@ const ProfileModal = () => {
     password: "",
   });
 
-  // Isi otomatis form saat modal dibuka
   useEffect(() => {
     if (user && isProfileModalOpen) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -29,9 +28,9 @@ const ProfileModal = () => {
         email: user.email || "",
         password: "",
       });
-      // Set preview foto awal dari database
-      setAvatarPreview(user.avatar || "https://ui-avatars.com/api/?name=User");
-      setAvatarFile(null); // Kosongkan file yang siap diupload
+      // 1. UBAH DI SINI: Jangan gunakan ui-avatars, set null jika tidak ada foto
+      setAvatarPreview(user.avatar || null);
+      setAvatarFile(null);
       setErrors({});
     }
   }, [user, isProfileModalOpen]);
@@ -44,18 +43,15 @@ const ProfileModal = () => {
     if (errors.server) setErrors({ ...errors, server: null });
   };
 
-  // 2. Fungsi saat user memilih foto dari komputernya
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validasi ukuran maksimal 2MB
       if (file.size > 2 * 1024 * 1024) {
         setErrors({ ...errors, avatar: "Ukuran gambar maksimal 2MB!" });
         return;
       }
-
-      setAvatarFile(file); // Simpan file asli untuk dikirim ke backend
-      setAvatarPreview(URL.createObjectURL(file)); // Buat URL lokal untuk preview di modal
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file)); // Ini akan mengganti ikon dengan foto yang baru dipilih
       if (errors.avatar) setErrors({ ...errors, avatar: null });
     }
   };
@@ -64,7 +60,6 @@ const ProfileModal = () => {
     e.preventDefault();
     const newErrors = {};
 
-    // Validasi
     if (!formData.name.trim()) {
       newErrors.name = "Nama lengkap tidak boleh kosong!";
     }
@@ -78,7 +73,6 @@ const ProfileModal = () => {
 
     setIsLoading(true);
 
-    // 3. UBAH KE FORMDATA (Wajib jika ada upload file)
     const payload = new FormData();
     payload.append("name", formData.name);
 
@@ -86,10 +80,9 @@ const ProfileModal = () => {
       payload.append("password", formData.password);
     }
     if (avatarFile) {
-      payload.append("avatar", avatarFile); // Masukkan file fotonya
+      payload.append("avatar", avatarFile);
     }
 
-    // Kirim payload FormData ke store
     const result = await updateProfile(payload);
 
     setIsLoading(false);
@@ -104,35 +97,42 @@ const ProfileModal = () => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
       <div className="bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-        {/* Header Modal */}
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-xl text-gray-800">Pengaturan Profil</h3>
           <button
             onClick={closeProfileModal}
-            className="p-2 hover:bg-gray-100 rounded-full text-gray-400 transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-full text-gray-400 transition-colors cursor-pointer"
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* 4. Avatar Section yang Bisa Diklik */}
         <div className="flex flex-col items-center mb-6 relative">
           <div
             className="relative group cursor-pointer"
-            onClick={() => fileInputRef.current.click()} // Memanggil input file yang disembunyikan
+            onClick={() => fileInputRef.current.click()}
           >
-            <img
-              src={avatarPreview} // Gunakan state avatarPreview
-              alt="Profile"
-              className={`w-24 h-24 rounded-full shadow-md border-4 object-cover transition-all group-hover:brightness-75 ${errors.avatar ? "border-red-500" : "border-white"}`}
-            />
-            {/* Overlay Icon Kamera saat di-hover */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* 2. UBAH DI SINI: Logika Tampilan Foto vs Ikon User */}
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                alt="Profile"
+                className={`w-24 h-24 rounded-full shadow-md border-4 object-cover transition-all group-hover:brightness-75 ${errors.avatar ? "border-red-500" : "border-white"}`}
+              />
+            ) : (
+              <div
+                className={`w-24 h-24 rounded-full shadow-md border-4 flex items-center justify-center bg-gray-100 text-gray-400 transition-all group-hover:brightness-95 ${errors.avatar ? "border-red-500" : "border-white"}`}
+              >
+                <User size={40} />
+              </div>
+            )}
+
+            {/* Overlay Icon Kamera saat di-hover (Saya tambahkan background hitam transparan agar ikon kamera putih tetap terlihat meskipun di atas ikon User abu-abu) */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 rounded-full">
               <Camera size={24} className="text-white drop-shadow-md" />
             </div>
           </div>
 
-          {/* Input tipe File yang disembunyikan */}
           <input
             type="file"
             ref={fileInputRef}

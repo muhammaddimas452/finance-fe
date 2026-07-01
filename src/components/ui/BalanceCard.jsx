@@ -1,8 +1,12 @@
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
+import { Eye, EyeOff } from "lucide-react";
+import { useUIStore } from "../../store/useUIStore";
 
 const BalanceCard = () => {
   const wallets = useFinanceStore((state) => state.wallets);
+
+  const { isBalanceHidden, toggleHideBalance } = useUIStore();
 
   // Hitung total saldo dari semua dompet
   const totalBalance = wallets.reduce((total, wallet) => {
@@ -20,8 +24,15 @@ const BalanceCard = () => {
           <p className="text-brand-100 text-sm font-medium mb-1">
             Total Balance
           </p>
+          <button
+            onClick={toggleHideBalance}
+            className="text-brand-100 hover:text-white transition-colors cursor-pointer p-1 rounded-full hover:bg-white/10"
+            title={isBalanceHidden ? "Tampilkan Saldo" : "Sembunyikan Saldo"}
+          >
+            {isBalanceHidden ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
           <h2 className="text-2xl md:text-2xl font-bold">
-            {formatRupiah(totalBalance)}
+            {isBalanceHidden ? "Rp ••••••••" : formatRupiah(totalBalance)}
           </h2>
         </div>
         <div className="text-right">

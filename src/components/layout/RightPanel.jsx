@@ -8,13 +8,10 @@ import {
   LogOut,
   LogIn,
   UserIcon,
-  Moon,
-  Sun,
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore"; // Import store
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
-import Profile from "../../assets/profile.JPEG";
 import { useAuthStore } from "../../store/useAuthStore";
 
 const RightPanel = () => {
@@ -25,8 +22,6 @@ const RightPanel = () => {
     openTransferModal,
     openAuthModal,
     openLogoutModal,
-    // isDarkMode,
-    // toggleDarkMode,
     openProfileModal,
   } = useUIStore();
   const { transactions } = useFinanceStore();
@@ -88,13 +83,6 @@ const RightPanel = () => {
         >
           <X size={20} />
         </button>
-        {/* <button
-          onClick={toggleDarkMode}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-400 transition-colors"
-          title={isDarkMode ? "Matikan Mode Gelap" : "Nyalakan Mode Gelap"}
-        >
-          {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-        </button> */}
         <div className="flex gap-3 ml-auto">
           <button onClick={openProfileModal} className="hover:text-gray-700">
             <Settings size={20} />
@@ -106,11 +94,27 @@ const RightPanel = () => {
       <div className="flex flex-col items-center">
         {isAuthenticated ? (
           <>
-            <img
-              src={user.avatar}
-              alt="Profile"
-              className="w-20 h-20 rounded-full mb-3 shadow-md border-4 border-white object-cover"
-            />
+            {/* LOGIKA PENGECEKAN AVATAR */}
+            {user?.avatar ? (
+              // Jika ada avatar, tampilkan foto
+              <img
+                src={user.avatar}
+                alt="Profile"
+                onClick={openProfileModal}
+                className="w-20 h-20 rounded-full mb-3 shadow-md border-4 border-white object-cover cursor-pointer hover:brightness-90 transition-all"
+                title="Edit Profile"
+              />
+            ) : (
+              // Jika tidak ada avatar, tampilkan ikon bawaan
+              <div
+                onClick={openProfileModal}
+                className="w-20 h-20 rounded-full mb-3 shadow-md border-4 border-white bg-gray-100 flex items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-200 transition-colors"
+                title="Edit Profile"
+              >
+                <UserIcon size={32} />
+              </div>
+            )}
+
             <h3 className="font-bold text-lg text-gray-800">{user.name}</h3>
             <div className="flex items-center gap-2 mt-2">
               <span className="text-xs text-gray-400 font-medium bg-gray-50 px-3 py-1 rounded-full">
@@ -118,7 +122,7 @@ const RightPanel = () => {
               </span>
               <button
                 onClick={openLogoutModal}
-                className="p-1.5 text-red-500 bg-red-50 rounded-full hover:bg-red-100 transition-colors"
+                className="p-1.5 text-red-500 bg-red-50 rounded-full hover:bg-red-100 transition-colors cursor-pointer"
                 title="Logout"
               >
                 <LogOut size={14} />
