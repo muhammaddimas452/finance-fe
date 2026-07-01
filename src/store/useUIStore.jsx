@@ -13,6 +13,9 @@ export const useUIStore = create((set) => ({
   isTransactionModalOpen: false,
   transactionType: "expense",
 
+  isBillModalOpen: false,
+  selectedBill: null,
+
   isAuthModalOpen: false,
   authMode: "login", // 'login' atau 'register'
   isLogoutModalOpen: false,
@@ -55,6 +58,10 @@ export const useUIStore = create((set) => ({
     set({ isCategoryModalOpen: true, categoryEditData: data }),
   closeCategoryModal: () =>
     set({ isCategoryModalOpen: false, categoryEditData: null }),
+
+  openBillModal: (bill = null) =>
+    set({ isBillModalOpen: true, selectedBill: bill }),
+  closeBillModal: () => set({ isBillModalOpen: false, selectedBill: null }),
 
   // Ubah fungsi open agar bisa menerima data (opsional)
   openWalletModal: (data = null) =>

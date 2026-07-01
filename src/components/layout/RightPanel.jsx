@@ -23,6 +23,7 @@ const RightPanel = () => {
     openAuthModal,
     openLogoutModal,
     openProfileModal,
+    openBillModal,
   } = useUIStore();
   const { transactions } = useFinanceStore();
 
@@ -63,7 +64,7 @@ const RightPanel = () => {
       color: "text-orange-500",
       bg: "bg-orange-50",
       hover: "group-hover:bg-orange-500 group-hover:text-white",
-      onClick: () => alert("Fitur Tagihan akan segera hadir!"),
+      onClick: () => openBillModal(),
     },
   ];
 
