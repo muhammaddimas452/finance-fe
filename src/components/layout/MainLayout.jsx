@@ -3,17 +3,15 @@ import { Menu, AlignEndHorizontal, UserIcon } from "lucide-react";
 import Sidebar from "./Sidebar";
 import RightPanel from "./RightPanel";
 import TransactionModal from "../ui/TransactionModal";
-import Profile from "../../assets/profile.JPEG";
 import TransferModal from "../ui/TransferModal";
 import CategoryModal from "../ui/CategoryModal";
 import AuthModal from "../ui/AuthModal";
 import LogoutModal from "../ui/LogoutModal";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
 import WalletModal from "../ui/WalletModal";
 import ProfileModal from "../ui/ProfileModal";
-import BillModal from "./components/modals/BillModal";
+import BillModal from "..ui/BillModal";
 
 // Import Store
 import { useFinanceStore } from "../../store/useFinanceStore";
