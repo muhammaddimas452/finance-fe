@@ -11,7 +11,7 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { useEffect } from "react";
 import WalletModal from "../ui/WalletModal";
 import ProfileModal from "../ui/ProfileModal";
-import BillModal from "..ui/BillModal";
+import BillModal from "../ui/BillModal";
 
 // Import Store
 import { useFinanceStore } from "../../store/useFinanceStore";
