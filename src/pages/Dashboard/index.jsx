@@ -4,9 +4,6 @@ import {
   Line,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -16,14 +13,15 @@ import {
 import BalanceCard from "../../components/ui/BalanceCard";
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
-import Profile from "../../assets/profile.JPEG";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useUIStore } from "../../store/useUIStore";
 
 const Dashboard = () => {
   // 1. Ambil data transaksi dari global state
   const { transactions } = useFinanceStore();
 
   const { user, isAuthenticated } = useAuthStore();
+  const { setIsRightPanelOpen } = useUIStore();
 
   // 2. Hitung Efisiensi (Total Pemasukan vs Total Pengeluaran)
   const totalIncome = transactions
@@ -33,16 +31,6 @@ const Dashboard = () => {
   const totalExpense = transactions
     .filter((t) => t.type === "expense")
     .reduce((total, t) => total + parseFloat(t.amount || 0), 0);
-
-  // Data untuk Donut Chart
-  // const efficiencyData = [
-  //   {
-  //     name: "Income",
-  //     value: totalIncome > 0 ? totalIncome : 1,
-  //     color: "#5b58ff",
-  //   },
-  //   { name: "Expense", value: totalExpense, color: "#ffb3c6" },
-  // ];
 
   // Hitung persentase sisa uang (Net) dari Income
   const netIncome = totalIncome - totalExpense;
@@ -94,6 +82,7 @@ const Dashboard = () => {
       if (t.type === "expense") monthEntry.expense += parseFloat(t.amount || 0);
     }
   });
+
   // 4. Data untuk Line Chart (Cash Flow Trend = Income - Expense per bulan)
   const cashFlowData = historyData.map((m) => ({
     name: m.name,
@@ -107,6 +96,8 @@ const Dashboard = () => {
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
           Dashboard
         </h1>
+
+        {/* Search Bar */}
         <div className="hidden md:flex bg-white px-4 py-3 rounded-2xl shadow-soft text-gray-400 items-center gap-3 w-72">
           <Search size={18} />
           <input
@@ -116,23 +107,23 @@ const Dashboard = () => {
           />
         </div>
 
+        {/* TOMBOL PROFILE: Hanya muncul di Tablet (md), hilang di Mobile dan Desktop (lg) */}
         <button
-          className="hidden md:flex lg:hidden w-10 h-10 rounded-full overflow-hidden shadow-sm"
-          onClick={() => {
-            /* Trigger buka RightPanel sudah dihandle oleh global state sebelumnya jika Anda pindahkan ke MainLayout */
-          }}
+          onClick={() => setIsRightPanelOpen(true)}
+          className="hidden md:flex lg:hidden w-10 h-10 rounded-full overflow-hidden shadow-md border-2 border-white hover:ring-2 hover:ring-[#5b58ff] transition-all cursor-pointer bg-gray-100 items-center justify-center"
         >
-          {isAuthenticated ? (
+          {isAuthenticated && user?.avatar ? (
             <img
               src={user.avatar}
               alt="Profile"
               className="w-full h-full object-cover"
             />
           ) : (
-            <UserIcon className="w-full h-full object-cover" />
+            <UserIcon size={20} className="text-gray-400" />
           )}
         </button>
       </header>
+
       {/* Grid Layout untuk Konten */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         {/* ROW 1: Balance Card (Kiri 5/12) & Exchange Rates (Kanan 7/12) */}

@@ -6,22 +6,10 @@ import Transactions from "./pages/Transaction";
 import Budgets from "./pages/Budgets";
 import Wallets from "./pages/Wallets";
 import Categories from "./pages/Category";
+import Bills from "./pages/Bills";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
-import { useUIStore } from "./store/useUIStore";
 
 function App() {
-  const { isDarkMode } = useUIStore();
-
-  // Efek ini berjalan 1x saat aplikasi baru dimuat
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
-
   return (
     <BrowserRouter>
       <MainLayout>
@@ -32,6 +20,7 @@ function App() {
           <Route path="/finance-fe/budgets" element={<Budgets />} />
           <Route path="/finance-fe/wallets" element={<Wallets />} />
           <Route path="/finance-fe/categories" element={<Categories />} />
+          <Route path="/finance-fe/bills" element={<Bills />} />
         </Routes>
       </MainLayout>
     </BrowserRouter>

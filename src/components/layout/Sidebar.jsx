@@ -3,12 +3,9 @@ import {
   ArrowRightLeft,
   Tags,
   Wallet,
-  PieChart,
-  Target,
-  HandCoins,
-  PiggyBank,
   Download,
   AlignEndHorizontal,
+  ReceiptText,
   X,
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore"; // Import store
@@ -45,6 +42,13 @@ const Sidebar = () => {
       icon: Tags,
       active: false,
       path: "/finance-fe/categories",
+    }, // MVP
+
+    {
+      name: "Bills",
+      icon: ReceiptText,
+      active: false,
+      path: "/finance-fe/bills",
     }, // MVP
 
     // {

@@ -70,16 +70,17 @@ function MainLayout({ children }) {
           {/* Tombol Profile Kanan / Untuk Right Panel */}
           <button
             onClick={() => setIsRightPanelOpen(true)}
-            className="w-10 h-10 rounded-full overflow-hidden shadow-sm"
+            className="w-10 h-10 rounded-full overflow-hidden shadow-md border-2 border-white hover:ring-2 hover:ring-[#5b58ff] transition-all cursor-pointer bg-gray-100 flex items-center justify-center"
           >
-            {isAuthenticated ? (
+            {/* LOGIKA PERBAIKAN AVATAR */}
+            {isAuthenticated && user?.avatar ? (
               <img
                 src={user.avatar}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
             ) : (
-              <UserIcon size={32} className="w-full h-full object-cover" />
+              <UserIcon size={20} className="text-gray-400" />
             )}
           </button>
         </div>
