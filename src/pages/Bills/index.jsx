@@ -6,7 +6,7 @@ import { formatRupiah } from "../../utils/currency";
 
 const Bills = () => {
   const { bills, fetchBills, deleteBill, updateBill } = useBillStore();
-  const { openBillModal, isBalanceHidden } = useUIStore();
+  const { openBillModal } = useUIStore();
 
   // Ambil data tagihan dari server saat halaman pertama kali dibuka
   useEffect(() => {
@@ -27,7 +27,7 @@ const Bills = () => {
         </h1>
         <button
           onClick={() => openBillModal()}
-          className="flex items-center cursor-pointer gap-2 bg-orange-500 hover:bg-orange-600 transition-colors text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-orange-500/30"
+          className="flex items-center cursor-pointer gap-2 bg-blue-500 hover:bg-blue-600 transition-colors text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30"
         >
           <Plus size={18} /> Tambah Tagihan
         </button>
@@ -45,8 +45,8 @@ const Bills = () => {
               key={bill.id}
               className={`relative overflow-hidden p-7 rounded-[2rem] shadow-xl text-white group hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 ${
                 bill.is_paid
-                  ? "bg-gradient-to-br from-emerald-400 to-emerald-600" // Warna Hijau jika sudah lunas
-                  : "bg-gradient-to-br from-orange-400 to-red-500" // Warna Oranye/Merah jika belum lunas
+                  ? "bg-gradient-to-br from-blue-400 to-blue-600" // Warna Hijau jika sudah lunas
+                  : "bg-gradient-to-br from-red-400 to-red-600" // Warna Oranye/Merah jika belum lunas
               }`}
             >
               {/* Ornamen Latar Belakang (Glassmorphism) */}
@@ -112,7 +112,7 @@ const Bills = () => {
                 </h3>
                 <p className="text-2xl xl:text-3xl font-bold mt-1 tracking-tight drop-shadow-md truncate w-full">
                   {/* Sensor Saldo juga berlaku di sini! */}
-                  {isBalanceHidden ? "Rp ••••••••" : formatRupiah(bill.amount)}
+                  {formatRupiah(bill.amount)}
                 </p>
               </div>
 
@@ -122,7 +122,7 @@ const Bills = () => {
                   <Clock size={14} />
                   <span>Tgl {bill.due_date} Tiap Bulan</span>
                 </div>
-                <span>{bill.is_paid ? "✔ LUNAS" : "BELUM DIBAYAR"}</span>
+                <span>{bill.is_paid ? "LUNAS" : "BELUM DIBAYAR"}</span>
               </div>
             </div>
           ))}
