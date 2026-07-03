@@ -35,7 +35,7 @@ function MainLayout({ children }) {
   }, [isAuthenticated, fetchInitialData, clearData]);
 
   return (
-    <div className="min-h-screen bg-white flex font-sans">
+    <div className="min-h-screen bg-background p-0 md:p-4 lg:p-8 flex items-center justify-center font-sans">
       <TransactionModal />
       <TransferModal />
       <CategoryModal />
