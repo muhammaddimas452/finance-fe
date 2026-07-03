@@ -23,7 +23,7 @@ const Sidebar = () => {
       name: "Dashboard",
       icon: LayoutDashboard,
       active: true,
-      path: "/finance-fe/",
+      path: "/",
     }, // MVP
     {
       name: "Transactions",
