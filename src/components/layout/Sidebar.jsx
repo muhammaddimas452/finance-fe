@@ -29,26 +29,26 @@ const Sidebar = () => {
       name: "Transactions",
       icon: ArrowRightLeft,
       active: false,
-      path: "/finance-fe/transaction",
+      path: "/transaction",
     }, // MVP
     {
       name: "Wallets",
       icon: Wallet,
       active: false,
-      path: "/finance-fe/wallets",
+      path: "/wallets",
     }, // MVP
     {
       name: "Categories",
       icon: Tags,
       active: false,
-      path: "/finance-fe/categories",
+      path: "/categories",
     }, // MVP
 
     {
       name: "Bills",
       icon: ReceiptText,
       active: false,
-      path: "/finance-fe/bills",
+      path: "/bills",
     },
   ];
 

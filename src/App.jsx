@@ -13,11 +13,10 @@ function App() {
       <MainLayout>
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/finance-fe/" element={<Dashboard />} />
-          <Route path="/finance-fe/transaction" element={<Transactions />} />
-          <Route path="/finance-fe/wallets" element={<Wallets />} />
-          <Route path="/finance-fe/categories" element={<Categories />} />
-          <Route path="/finance-fe/bills" element={<Bills />} />
+          <Route path="/transaction" element={<Transactions />} />
+          <Route path="/wallets" element={<Wallets />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/bills" element={<Bills />} />
         </Routes>
       </MainLayout>
     </BrowserRouter>
