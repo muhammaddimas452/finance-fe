@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useRef } from "react";
-// Ikon User sudah ter-import di sini, jadi kita bisa langsung menggunakannya
 import { X, User, Lock, Mail, Camera } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -9,40 +9,32 @@ const ProfileModal = () => {
   const { user, updateProfile } = useAuthStore();
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-
   const fileInputRef = useRef(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
-
   useEffect(() => {
     if (user && isProfileModalOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: user.name || "",
         email: user.email || "",
         password: "",
       });
-      // 1. UBAH DI SINI: Jangan gunakan ui-avatars, set null jika tidak ada foto
       setAvatarPreview(user.avatar || null);
       setAvatarFile(null);
       setErrors({});
     }
   }, [user, isProfileModalOpen]);
-
   if (!isProfileModalOpen) return null;
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: null });
     if (errors.server) setErrors({ ...errors, server: null });
   };
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -51,42 +43,33 @@ const ProfileModal = () => {
         return;
       }
       setAvatarFile(file);
-      setAvatarPreview(URL.createObjectURL(file)); // Ini akan mengganti ikon dengan foto yang baru dipilih
+      setAvatarPreview(URL.createObjectURL(file));
       if (errors.avatar) setErrors({ ...errors, avatar: null });
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-
     if (!formData.name.trim()) {
       newErrors.name = "Nama lengkap tidak boleh kosong!";
     }
     if (formData.password && formData.password.length < 6) {
       newErrors.password = "Password baru minimal 6 karakter!";
     }
-
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
     }
-
     setIsLoading(true);
-
     const payload = new FormData();
     payload.append("name", formData.name);
-
     if (formData.password) {
       payload.append("password", formData.password);
     }
     if (avatarFile) {
       payload.append("avatar", avatarFile);
     }
-
     const result = await updateProfile(payload);
-
     setIsLoading(false);
-
     if (result.success) {
       closeProfileModal();
     } else {
@@ -95,8 +78,8 @@ const ProfileModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
-      <div className="bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
+      <div className="bg-white w-full max-w-sm rounded-4xl p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-xl text-gray-800">Pengaturan Profil</h3>
           <button
@@ -106,13 +89,11 @@ const ProfileModal = () => {
             <X size={20} />
           </button>
         </div>
-
         <div className="flex flex-col items-center mb-6 relative">
           <div
             className="relative group cursor-pointer"
             onClick={() => fileInputRef.current.click()}
           >
-            {/* 2. UBAH DI SINI: Logika Tampilan Foto vs Ikon User */}
             {avatarPreview ? (
               <img
                 src={avatarPreview}
@@ -126,13 +107,10 @@ const ProfileModal = () => {
                 <User size={40} />
               </div>
             )}
-
-            {/* Overlay Icon Kamera saat di-hover (Saya tambahkan background hitam transparan agar ikon kamera putih tetap terlihat meskipun di atas ikon User abu-abu) */}
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 rounded-full">
               <Camera size={24} className="text-white drop-shadow-md" />
             </div>
           </div>
-
           <input
             type="file"
             ref={fileInputRef}
@@ -140,7 +118,6 @@ const ProfileModal = () => {
             accept="image/*"
             className="hidden"
           />
-
           {errors.avatar ? (
             <span className="text-xs text-red-500 mt-2 font-medium">
               {errors.avatar}
@@ -154,16 +131,13 @@ const ProfileModal = () => {
             </span>
           )}
         </div>
-
         {errors.server && (
           <div className="bg-red-50 text-red-500 text-sm p-3 rounded-xl mb-4 font-medium text-center border border-red-100">
             {errors.server}
           </div>
         )}
-
         {/* Form Profil */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email (Disabled/Readonly) */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 ml-1">
               EMAIL (TETAP)
@@ -180,7 +154,6 @@ const ProfileModal = () => {
               />
             </div>
           </div>
-
           {/* Nama Lengkap */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 ml-1">
@@ -210,7 +183,6 @@ const ProfileModal = () => {
               </p>
             )}
           </div>
-
           {/* Ubah Password (Opsional) */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 ml-1">
@@ -241,7 +213,6 @@ const ProfileModal = () => {
               </p>
             )}
           </div>
-
           <button
             type="submit"
             disabled={isLoading}

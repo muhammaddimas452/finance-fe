@@ -7,17 +7,11 @@ const TransferModal = () => {
   const { isTransferModalOpen, closeTransferModal } = useUIStore();
   const { wallets, transfer } = useFinanceStore();
   const [data, setData] = useState({ from: "", to: "", amount: "" });
-
-  // 1. Tambahkan state penampung error
   const [errors, setErrors] = useState({});
-
   if (!isTransferModalOpen) return null;
-
   const handleTransfer = async (e) => {
     e.preventDefault();
     const newErrors = {};
-
-    // 2. Logika Validasi Detail
     if (!data.from) newErrors.from = "Pilih dompet asal!";
     if (!data.to) newErrors.to = "Pilih dompet tujuan!";
     if (data.from && data.to && data.from === data.to) {
@@ -26,51 +20,43 @@ const TransferModal = () => {
     if (!data.amount || data.amount <= 0) {
       newErrors.amount = "Nominal transfer tidak valid!";
     }
-
-    // 3. Jika ada error, tampilkan dan hentikan proses
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
     }
-
     const result = await transfer({
       fromWalletId: parseInt(data.from),
       toWalletId: parseInt(data.to),
-      amount: parseFloat(data.amount), // Gunakan parseFloat untuk keamanan angka
+      amount: parseFloat(data.amount),
     });
-
     if (result.success) {
       closeTransferModal();
       setData({ from: "", to: "", amount: "" });
-      setErrors({}); // Reset error setelah sukses
+      setErrors({});
     } else {
-      // Menangkap error spesifik dari backend (misal: saldo tidak cukup)
       setErrors({ server: result.message });
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
-      <div className="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
+      <div className="bg-white w-full max-w-sm rounded-4xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-gray-800">Transfer Antar Dompet</h3>
           <button
             onClick={() => {
               closeTransferModal();
-              setErrors({}); // Bersihkan error saat modal ditutup paksa
+              setErrors({});
             }}
             className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
           >
             <X size={20} />
           </button>
         </div>
-
-        {/* Notifikasi Error dari Server (misal: saldo tidak cukup) */}
         {errors.server && (
           <div className="bg-red-50 text-red-500 text-sm p-3 rounded-xl mb-4 font-medium text-center border border-red-100">
             {errors.server}
           </div>
         )}
-
         <form onSubmit={handleTransfer} className="space-y-4">
           {/* Kolom DARI */}
           <div>
@@ -106,7 +92,6 @@ const TransferModal = () => {
           <div className="flex justify-center py-1 text-brand-500">
             <ArrowRightLeft className="rotate-90" />
           </div>
-
           {/* Kolom KE */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1">
@@ -137,7 +122,6 @@ const TransferModal = () => {
               </p>
             )}
           </div>
-
           {/* Kolom NOMINAL */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1">
@@ -163,7 +147,6 @@ const TransferModal = () => {
               </p>
             )}
           </div>
-
           <button
             type="submit"
             className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] cursor-pointer text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-500/30 mt-2 transition-all"

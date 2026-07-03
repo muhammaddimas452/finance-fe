@@ -1,11 +1,10 @@
+/* eslint-disable no-unused-vars */
 import { create } from "zustand";
 import api from "../lib/axios";
 
 export const useBillStore = create((set) => ({
   bills: [],
   isLoading: false,
-
-  // 1. Ambil semua data tagihan
   fetchBills: async () => {
     set({ isLoading: true });
     try {
@@ -16,8 +15,6 @@ export const useBillStore = create((set) => ({
       set({ isLoading: false });
     }
   },
-
-  // 2. Tambah tagihan baru
   addBill: async (billData) => {
     try {
       const response = await api.post("/bills", billData);
@@ -30,8 +27,6 @@ export const useBillStore = create((set) => ({
       };
     }
   },
-
-  // 3. Edit tagihan (termasuk mengubah status is_paid)
   updateBill: async (id, billData) => {
     try {
       const response = await api.put(`/bills/${id}`, billData);
@@ -48,8 +43,6 @@ export const useBillStore = create((set) => ({
       };
     }
   },
-
-  // 4. Hapus tagihan
   deleteBill: async (id) => {
     try {
       await api.delete(`/bills/${id}`);
@@ -57,7 +50,6 @@ export const useBillStore = create((set) => ({
         bills: state.bills.filter((bill) => bill.id !== id),
       }));
       return { success: true };
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       return { success: false, message: "Gagal menghapus tagihan." };
     }

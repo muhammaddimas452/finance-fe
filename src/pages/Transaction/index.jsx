@@ -5,7 +5,7 @@ import {
   Trash2,
   ArrowUpRight,
   ArrowDownLeft,
-  Calendar, // 1. Tambahkan ikon Calendar
+  Calendar,
 } from "lucide-react";
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
@@ -14,31 +14,18 @@ const Transactions = () => {
   const { transactions, deleteTransaction } = useFinanceStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
-
-  // 2. Tambahkan State untuk Filter Bulan (Default ke bulan saat ini)
   const [filterMonth, setFilterMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   });
-
-  // 3. Update Logika Filter & Search
   const filteredTransactions = transactions.filter((t) => {
-    // Cek Search (Judul)
     const matchesSearch = t.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-
-    // Cek Tipe (Income/Expense/All)
     const matchesType = filterType === "all" || t.type === filterType;
-
-    // Cek Bulan
-    // Jika filterMonth kosong (user menghapus isinya), tampilkan semua
     const matchesMonth = !filterMonth || t.date.startsWith(filterMonth);
-
-    // Harus memenuhi ketiga syarat tersebut
     return matchesSearch && matchesType && matchesMonth;
   });
-
   const handleDelete = (id) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus transaksi ini?")) {
       deleteTransaction(id);
@@ -51,7 +38,6 @@ const Transactions = () => {
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
           Semua Transaksi
         </h1>
-
         <div className="flex flex-col sm:flex-row flex-wrap gap-3">
           {/* Search Bar */}
           <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2 w-full sm:w-56 text-sm">
@@ -64,7 +50,6 @@ const Transactions = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-
           {/* Filter Bulan */}
           <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2 text-sm">
             <Calendar size={18} className="text-gray-400 shrink-0" />
@@ -75,7 +60,6 @@ const Transactions = () => {
               onChange={(e) => setFilterMonth(e.target.value)}
             />
           </div>
-
           {/* Filter Type */}
           <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2 text-sm">
             <Filter size={18} className="text-gray-400 shrink-0" />
@@ -91,9 +75,8 @@ const Transactions = () => {
           </div>
         </div>
       </header>
-
       {/* Table Container */}
-      <div className="bg-white rounded-[2rem] shadow-soft overflow-hidden flex-1 flex flex-col border border-gray-50">
+      <div className="bg-white rounded-4xl shadow-soft overflow-hidden flex-1 flex flex-col border border-gray-50">
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-left">
             <thead>

@@ -1,21 +1,19 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useFinanceStore } from "../../store/useFinanceStore";
 
 const TransactionModal = () => {
-  // Tambahkan transactionEditData di sini agar mode Edit tidak error
   const {
     isTransactionModalOpen,
     transactionType,
     closeTransactionModal,
     transactionEditData,
   } = useUIStore();
-  // Tambahkan updateTransaction di sini
   const { wallets, categories, addTransaction, updateTransaction } =
     useFinanceStore();
   const [errors, setErrors] = useState({});
-
   const [formData, setFormData] = useState({
     title: "",
     amount: "",
@@ -23,40 +21,30 @@ const TransactionModal = () => {
     categoryId: "",
     walletId: "",
   });
-
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormData((prev) => ({ ...prev, type: transactionType }));
   }, [transactionType, isTransactionModalOpen]);
-
   if (!isTransactionModalOpen) return null;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-
-    // --- LOGIKA VALIDASI ---
     if (!formData.amount || formData.amount <= 0)
       newErrors.amount = "Nominal harus lebih dari 0!";
     if (!formData.title.trim())
       newErrors.title = "Judul transaksi wajib diisi!";
     if (!formData.walletId)
       newErrors.walletId = "Pilih dompet terlebih dahulu!";
-
-    // Jika ada error, hentikan fungsi dan tampilkan pesan merah
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
     }
-
     const payload = {
       title: formData.title,
       amount: formData.amount,
-      type: formData.type, // Perbaikan: Gunakan formData.type, bukan variabel 'type' yang tidak terdefinisi
+      type: formData.type,
       category_id: formData.categoryId || null,
       wallet_id: formData.walletId,
       date: formData.date || new Date().toISOString().split("T")[0],
     };
-
     if (transactionEditData) {
       const result = await updateTransaction(transactionEditData.id, payload);
       if (result.success) closeTransactionModal();
@@ -68,8 +56,6 @@ const TransactionModal = () => {
       }
     }
   };
-
-  // --- MENGHAPUS ERROR SAAT MENGETIK ---
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (errors[e.target.name]) {
@@ -79,7 +65,7 @@ const TransactionModal = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
-      <div className="bg-white w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white w-full max-w-md rounded-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="px-6 py-4 flex justify-between items-center border-b border-gray-100">
           <h3 className="font-bold text-lg text-gray-800">
             Add New {formData.type === "income" ? "Income" : "Expense"}
@@ -91,7 +77,6 @@ const TransactionModal = () => {
             <X size={20} />
           </button>
         </div>
-
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="flex bg-gray-50 p-1 rounded-xl">
             <button
@@ -109,7 +94,6 @@ const TransactionModal = () => {
               Income
             </button>
           </div>
-
           {/* --- INPUT TITLE DENGAN VALIDASI --- */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1">
@@ -133,7 +117,6 @@ const TransactionModal = () => {
               </p>
             )}
           </div>
-
           {/* --- INPUT AMOUNT DENGAN VALIDASI --- */}
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1">
@@ -158,7 +141,7 @@ const TransactionModal = () => {
               </p>
             )}
           </div>
-
+          {/* --- INPUT CATEGORY DENGAN VALIDASI --- */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1">
@@ -180,7 +163,6 @@ const TransactionModal = () => {
                   ))}
               </select>
             </div>
-
             {/* --- SELECT WALLET DENGAN VALIDASI --- */}
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1">
@@ -210,7 +192,6 @@ const TransactionModal = () => {
               )}
             </div>
           </div>
-
           <button
             type="submit"
             className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white cursor-pointer font-medium rounded-xl text-sm px-5 py-3.5 text-center transition-colors shadow-lg shadow-brand-500/30 mt-4"

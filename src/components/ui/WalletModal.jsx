@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
 import { X, Wallet, CreditCard, Smartphone } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
@@ -7,16 +8,13 @@ const WalletModal = () => {
   const { isWalletModalOpen, closeWalletModal, walletEditData } = useUIStore();
   const { addWallet, updateWallet } = useFinanceStore();
   const [errors, setErrors] = useState({});
-
   const [formData, setFormData] = useState({
     name: "",
     balance: "",
     icon: "Wallet",
   });
-
   useEffect(() => {
     if (walletEditData) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: walletEditData.name,
         balance: walletEditData.balance,
@@ -25,24 +23,18 @@ const WalletModal = () => {
     } else {
       setFormData({ name: "", balance: "", icon: "Wallet" });
     }
-    // Hapus pesan error lama jika modal dibuka/ditutup
     setErrors({});
   }, [walletEditData, isWalletModalOpen]);
-
   if (!isWalletModalOpen) return null;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-
     if (!formData.name.trim()) newErrors.name = "Nama dompet wajib diisi!";
     if (formData.balance === "")
       newErrors.balance = "Saldo awal tidak boleh kosong!";
-
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
     }
-
     let result;
     if (walletEditData) {
       result = await updateWallet(walletEditData.id, {
@@ -58,16 +50,14 @@ const WalletModal = () => {
         is_primary: false,
       });
     }
-
     if (result.success) {
       closeWalletModal();
       setFormData({ name: "", balance: "", icon: "Wallet" });
     }
   };
-
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
-      <div className="bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
+      <div className="bg-white w-full max-w-sm rounded-4xl p-8 shadow-2xl animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-xl text-gray-800">
             {walletEditData ? "Edit Dompet" : "Tambah Dompet"}
@@ -79,7 +69,6 @@ const WalletModal = () => {
             <X size={20} />
           </button>
         </div>
-
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Input Nama Dompet */}
           <div>
@@ -106,8 +95,7 @@ const WalletModal = () => {
               </p>
             )}
           </div>
-
-          {/* Input Saldo (Sudah bisa diisi) */}
+          {/* Input Saldo */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">
               Saldo Awal (RP)
@@ -115,7 +103,6 @@ const WalletModal = () => {
             <input
               type="number"
               placeholder="0"
-              // Dihapus disabled={!!walletEditData} agar selalu bisa diketik
               className={`w-full p-4 bg-gray-50 rounded-2xl outline-none border transition-all text-sm font-medium ${
                 errors.balance
                   ? "border-red-500 focus:border-red-500 text-red-500"
@@ -138,7 +125,6 @@ const WalletModal = () => {
               </span>
             )}
           </div>
-
           {/* Input Ikon */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">
@@ -165,7 +151,6 @@ const WalletModal = () => {
               ))}
             </div>
           </div>
-
           <button className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white py-4 rounded-2xl font-bold shadow-lg shadow-brand-500/30 cursor-pointer transition-all mt-2">
             {walletEditData ? "Simpan Perubahan" : "Simpan Dompet"}
           </button>

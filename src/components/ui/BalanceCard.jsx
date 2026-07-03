@@ -5,18 +5,14 @@ import { useUIStore } from "../../store/useUIStore";
 
 const BalanceCard = () => {
   const wallets = useFinanceStore((state) => state.wallets);
-
   const { isBalanceHidden, toggleHideBalance } = useUIStore();
-
-  // Hitung total saldo dari semua dompet
   const totalBalance = wallets.reduce((total, wallet) => {
     return total + parseFloat(wallet.balance || 0);
   }, 0);
-
   const primaryWallet = wallets.find((w) => w.is_primary) || wallets[0] || null;
 
   return (
-    <div className="bg-brand-500 rounded-[2rem] p-6 bg-gradient-to-br from-[#5b58ff] to-[#8a88ff] text-white shadow-xl shadow-brand-500/40 flex flex-col justify-between h-full relative overflow-hidden">
+    <div className="rounded-4xl p-6 bg-linear-to-br from-[#5b58ff] to-[#8a88ff] text-white shadow-xl shadow-brand-500/40 flex flex-col justify-between h-full relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl"></div>
 
       <div className="relative z-10 flex justify-between items-start mb-6">

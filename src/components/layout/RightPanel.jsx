@@ -9,7 +9,7 @@ import {
   LogIn,
   UserIcon,
 } from "lucide-react";
-import { useUIStore } from "../../store/useUIStore"; // Import store
+import { useUIStore } from "../../store/useUIStore";
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -26,19 +26,14 @@ const RightPanel = () => {
     openBillModal,
   } = useUIStore();
   const { transactions } = useFinanceStore();
-
   const { user, isAuthenticated } = useAuthStore();
-
-  // Ambil 5 transaksi terbaru saja
   const latestTransactions = transactions.slice(0, 5);
-
   const quickActions = [
     {
       name: "Income",
       icon: TrendingUp,
       color: "text-green-500",
       bg: "bg-green-50",
-      // Tulis utuh menggunakan awalan group-hover
       hover: "group-hover:bg-green-500 group-hover:text-white",
       onClick: () => openTransactionModal("income"),
     },
@@ -80,7 +75,7 @@ const RightPanel = () => {
       <div className="flex justify-between items-center text-gray-400">
         <button
           className="lg:hidden p-2 bg-gray-50 rounded-full hover:text-gray-800"
-          onClick={() => setIsRightPanelOpen(false)} // Gunakan fungsi Zustand
+          onClick={() => setIsRightPanelOpen(false)}
         >
           <X size={20} />
         </button>
@@ -90,14 +85,11 @@ const RightPanel = () => {
           </button>
         </div>
       </div>
-
       {/* Profile */}
       <div className="flex flex-col items-center">
         {isAuthenticated ? (
           <>
-            {/* LOGIKA PENGECEKAN AVATAR */}
             {user?.avatar ? (
-              // Jika ada avatar, tampilkan foto
               <img
                 src={user.avatar}
                 alt="Profile"
@@ -106,7 +98,6 @@ const RightPanel = () => {
                 title="Edit Profile"
               />
             ) : (
-              // Jika tidak ada avatar, tampilkan ikon bawaan
               <div
                 onClick={openProfileModal}
                 className="w-20 h-20 rounded-full mb-3 shadow-md border-4 border-white bg-gray-100 flex items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-200 transition-colors"
@@ -145,7 +136,6 @@ const RightPanel = () => {
           </>
         )}
       </div>
-
       {/* Quick Actions */}
       <div className="flex justify-between px-2">
         {quickActions.map((action) => (
@@ -165,7 +155,6 @@ const RightPanel = () => {
           </div>
         ))}
       </div>
-
       {/* Recent Transaction Placeholder */}
       <div className="flex-1 mt-4 overflow-y-auto pr-2 custom-scrollbar">
         <div className="flex justify-between items-center mb-4">

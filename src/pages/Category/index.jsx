@@ -7,7 +7,6 @@ const Categories = () => {
   const { categories, deleteCategory } = useFinanceStore();
   const { openCategoryModal } = useUIStore();
   const [activeTab, setActiveTab] = useState("expense");
-
   const filteredCategories = categories.filter((c) => c.type === activeTab);
 
   return (
@@ -28,7 +27,6 @@ const Categories = () => {
           <Plus size={18} /> Tambah Kategori
         </button>
       </header>
-
       <div className="flex w-full sm:w-fit bg-white p-1.5 rounded-2xl shadow-soft mb-8 border border-gray-50">
         <button
           type="button"
@@ -53,31 +51,23 @@ const Categories = () => {
           Pemasukan
         </button>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4">
         {filteredCategories.map((cat) => (
           <div
             key={cat.id}
-            // 1. Tambahkan 'relative' di sini agar tombol absolute tidak keluar jalur
             className="relative bg-white p-5 shadow-soft border border-gray-50 flex items-center group overflow-hidden"
           >
-            {/* 2. Ikon Tag */}
+            {/* Ikon Tag */}
             <div className="w-12 h-12 shrink-0 bg-brand-50 text-brand-500 rounded-2xl flex items-center justify-center mr-4">
               <Tag size={20} />
             </div>
-
-            {/* 3. Teks Kategori */}
-            {/* Tambahkan pr-16 (padding right) agar teks terpotong sebelum tertimpa tombol hover */}
-            {/* 3. Teks Kategori (Hapus pr-16, ganti jadi overflow-hidden biasa) */}
+            {/* Teks Kategori */}
             <div className="flex-1 overflow-hidden">
               <p className="font-bold text-gray-700 truncate" title={cat.name}>
                 {cat.name}
               </p>
             </div>
-
-            {/* 4. Tombol Aksi (JADIKAN ABSOLUTE) */}
-            {/* Dengan absolute right-4, tombol melayang di pojok kanan tanpa mengganggu ukuran teks */}
-            {/* 4. Tombol Aksi */}
+            {/* Tombol Aksi */}
             <div className="right-3 flex gap-1 opacity-100 transition-opacity bg-white pl-4 py-2">
               <button
                 onClick={() => openCategoryModal(cat)}

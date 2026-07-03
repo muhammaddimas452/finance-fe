@@ -1,5 +1,4 @@
 import jsPDF from "jspdf";
-// 1. Ubah cara impor autotable menjadi seperti ini:
 import autoTable from "jspdf-autotable";
 
 export const downloadPDF = (transactions) => {
@@ -7,13 +6,10 @@ export const downloadPDF = (transactions) => {
     alert("Tidak ada data transaksi untuk diekspor!");
     return;
   }
-
   const doc = new jsPDF("p", "mm", "a4");
-
   doc.setFontSize(20);
   doc.setTextColor(40, 40, 40);
   doc.text("Laporan Transaksi Mooney", 14, 22);
-
   doc.setFontSize(10);
   doc.setTextColor(100, 100, 100);
   const printDate = new Date().toLocaleDateString("id-ID", {
@@ -23,7 +19,6 @@ export const downloadPDF = (transactions) => {
     day: "numeric",
   });
   doc.text(`Tanggal Cetak: ${printDate}`, 14, 30);
-
   const tableColumn = [
     "Tanggal",
     "Judul Transaksi",
@@ -33,7 +28,6 @@ export const downloadPDF = (transactions) => {
     "Dompet",
   ];
   const tableRows = [];
-
   transactions.forEach((t) => {
     const transactionData = [
       t.date,
@@ -45,8 +39,6 @@ export const downloadPDF = (transactions) => {
     ];
     tableRows.push(transactionData);
   });
-
-  // 2. PERBAIKAN: Gunakan fungsi autoTable() dan masukkan 'doc' sebagai argumen pertamanya
   autoTable(doc, {
     startY: 38,
     head: [tableColumn],
@@ -65,7 +57,6 @@ export const downloadPDF = (transactions) => {
       fillColor: [248, 248, 250],
     },
   });
-
   const fileNameDate = new Date().toISOString().split("T")[0];
   doc.save(`Laporan_Mooney_${fileNameDate}.pdf`);
 };

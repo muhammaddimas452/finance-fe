@@ -8,7 +8,7 @@ import {
   ReceiptText,
   X,
 } from "lucide-react";
-import { useUIStore } from "../../store/useUIStore"; // Import store
+import { useUIStore } from "../../store/useUIStore";
 import { Link, useLocation } from "react-router-dom";
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { downloadPDF } from "../../utils/exportData";
@@ -49,26 +49,7 @@ const Sidebar = () => {
       icon: ReceiptText,
       active: false,
       path: "/finance-fe/bills",
-    }, // MVP
-
-    // {
-    //   name: "Debts",
-    //   icon: HandCoins,
-    //   active: false,
-    //   path: "/finance-fe/debts",
-    // }, // Menengah
-    // {
-    //   name: "Reports",
-    //   icon: PieChart,
-    //   active: false,
-    //   path: "/finance-fe/reports",
-    // }, // Menengah
-    // {
-    //   name: "Savings Goals",
-    //   icon: PiggyBank,
-    //   active: false,
-    //   path: "/finance-fe/savings",
-    // }, // Lanjutan
+    },
   ];
 
   return (
@@ -80,7 +61,7 @@ const Sidebar = () => {
       md:translate-x-0 md:shadow-none shadow-2xl
     `}
     >
-      {/* Header Sidebar: Tambahkan tombol Close untuk Mobile */}
+      {/* Header Sidebar: Tambahan tombol Close untuk Mobile */}
       <div className="flex items-center justify-between mb-12 px-2">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-black font-bold text-xl">
@@ -88,7 +69,6 @@ const Sidebar = () => {
           </div>
           <span className="text-xl font-bold text-gray-800">mooney</span>
         </div>
-
         <button
           className="md:hidden p-1 text-gray-400 hover:text-gray-800"
           onClick={() => setIsMobileMenuOpen(false)}
@@ -96,7 +76,6 @@ const Sidebar = () => {
           <X size={24} />
         </button>
       </div>
-
       {/* Navigation */}
       <nav className="flex-1 space-y-2 overflow-y-auto pr-2 pb-4">
         {menuItems.map((item) => {
@@ -125,8 +104,7 @@ const Sidebar = () => {
           );
         })}
       </nav>
-
-      {/* Promo Card (Disembunyikan di layar HP kecil agar tidak menumpuk) */}
+      {/* Export Data Section */}
       <div className=" sm:block bg-brand-50 rounded-3xl p-5 text-center mt-auto">
         <div className="bg-[#fbfbfe] w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-sm">
           <Download size={24} className="text-brand-500" />

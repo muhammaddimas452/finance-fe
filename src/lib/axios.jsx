@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Buat instance dengan konfigurasi dasar
 const api = axios.create({
-  baseURL: "https://finance-be-production-d9ae.up.railway.app/api", // URL endpoint Laravel Anda
+  baseURL: "https://finance-be-production-d9ae.up.railway.app/api", // URL endpoint Laravel
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",

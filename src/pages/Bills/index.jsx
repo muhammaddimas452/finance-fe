@@ -7,15 +7,10 @@ import { formatRupiah } from "../../utils/currency";
 const Bills = () => {
   const { bills, fetchBills, deleteBill, updateBill } = useBillStore();
   const { openBillModal } = useUIStore();
-
-  // Ambil data tagihan dari server saat halaman pertama kali dibuka
   useEffect(() => {
     fetchBills();
   }, [fetchBills]);
-
-  // Fungsi untuk menandai tagihan sudah dibayar / belum
   const handleTogglePaid = async (bill) => {
-    // Balikkan status is_paid saat ini (true jadi false, false jadi true)
     await updateBill(bill.id, { is_paid: !bill.is_paid });
   };
 
@@ -43,25 +38,21 @@ const Bills = () => {
           {bills.map((bill) => (
             <div
               key={bill.id}
-              className={`relative overflow-hidden p-7 rounded-[2rem] shadow-xl text-white group hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 ${
+              className={`relative overflow-hidden p-7 rounded-4xl shadow-xl text-white group hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 ${
                 bill.is_paid
-                  ? "bg-gradient-to-br from-blue-400 to-blue-600" // Warna Hijau jika sudah lunas
-                  : "bg-gradient-to-br from-red-400 to-red-600" // Warna Oranye/Merah jika belum lunas
+                  ? "bg-linear-to-br from-blue-400 to-blue-600"
+                  : "bg-linear-to-br from-red-400 to-red-600"
               }`}
             >
-              {/* Ornamen Latar Belakang (Glassmorphism) */}
               <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
               <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-black/10 rounded-full blur-2xl pointer-events-none"></div>
-
               <div className="relative z-10 flex justify-between items-start mb-8">
                 {/* Ikon Kiri */}
                 <div className="w-14 h-14 bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-inner">
                   <Receipt size={24} />
                 </div>
-
                 {/* Tombol Aksi Kanan */}
                 <div className="flex gap-2 opacity-100 translate-x-4">
-                  {/* Tombol Tandai Lunas / Batal Lunas */}
                   <button
                     onClick={() => handleTogglePaid(bill)}
                     className={`p-2.5 rounded-xl backdrop-blur-md border transition-colors cursor-pointer ${
@@ -78,7 +69,6 @@ const Bills = () => {
                       fill={bill.is_paid ? "currentColor" : "none"}
                     />
                   </button>
-
                   <button
                     onClick={() => openBillModal(bill)}
                     className="p-2.5 bg-white/20 hover:bg-white/40 border border-white/10 rounded-xl backdrop-blur-md transition-colors cursor-pointer"
@@ -86,7 +76,6 @@ const Bills = () => {
                   >
                     <Edit2 size={16} />
                   </button>
-
                   <button
                     onClick={() => {
                       if (
@@ -104,18 +93,15 @@ const Bills = () => {
                   </button>
                 </div>
               </div>
-
               {/* Info Utama Tagihan */}
               <div className="relative z-10">
                 <h3 className="font-medium text-white/90 text-sm tracking-wide">
                   {bill.title}
                 </h3>
                 <p className="text-2xl xl:text-3xl font-bold mt-1 tracking-tight drop-shadow-md truncate w-full">
-                  {/* Sensor Saldo juga berlaku di sini! */}
                   {formatRupiah(bill.amount)}
                 </p>
               </div>
-
               {/* Info Bawah: Jatuh Tempo & Status */}
               <div className="relative z-10 mt-6 pt-4 border-t border-white/20 flex justify-between items-center text-xs font-bold uppercase tracking-widest text-white/90">
                 <div className="flex items-center gap-1.5">

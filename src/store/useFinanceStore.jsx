@@ -2,18 +2,13 @@ import { create } from "zustand";
 import api from "../lib/axios";
 
 export const useFinanceStore = create((set) => ({
-  // 1. Kosongkan semua data dummy menjadi array kosong
   wallets: [],
   categories: [],
   transactions: [],
-  savings: [], // Opsional jika fitur ini akan diaktifkan nanti
   isLoading: false,
-
-  // 2. Fungsi untuk mengambil semua data awal dari API
   fetchInitialData: async () => {
     set({ isLoading: true });
     try {
-      // Mengambil data secara paralel agar lebih cepat
       const [walletsRes, categoriesRes, transactionsRes] = await Promise.all([
         api.get("/wallets"),
         api.get("/categories"),
@@ -31,14 +26,10 @@ export const useFinanceStore = create((set) => ({
       set({ isLoading: false });
     }
   },
-
   setPrimaryWallet: async (walletId) => {
     try {
       const response = await api.patch(`/wallets/${walletId}/set-primary`);
-
-      // Update state wallets dengan data terbaru dari server
       set({ wallets: response.data.wallets });
-
       return { success: true };
     } catch (error) {
       return {
@@ -48,18 +39,14 @@ export const useFinanceStore = create((set) => ({
       };
     }
   },
-
-  // 3. Reset data saat logout
   clearData: () =>
     set({
       wallets: [],
       categories: [],
       transactions: [],
     }),
-
   // --- ACTIONS ---
-
-  // 1. Tambah Dompet
+  // 1. --- TAMBAH DOMPET ---
   addWallet: async (walletData) => {
     try {
       const response = await api.post("/wallets", walletData);
@@ -72,7 +59,6 @@ export const useFinanceStore = create((set) => ({
       return { success: false, message: "Gagal membuat dompet baru" };
     }
   },
-
   // --- UPDATE DOMPET ---
   updateWallet: async (id, updatedData) => {
     try {
@@ -87,7 +73,6 @@ export const useFinanceStore = create((set) => ({
       return { success: false, message: "Gagal memperbarui dompet" };
     }
   },
-
   // --- HAPUS DOMPET ---
   deleteWallet: async (id) => {
     try {
@@ -102,8 +87,7 @@ export const useFinanceStore = create((set) => ({
       return { success: false, message: "Gagal menghapus dompet" };
     }
   },
-
-  // 2. Tambah Kategori
+  // Tambah Kategori
   addCategory: async (categoryData) => {
     try {
       const response = await api.post("/categories", categoryData);
@@ -116,7 +100,7 @@ export const useFinanceStore = create((set) => ({
       return { success: false, message: "Gagal membuat kategori" };
     }
   },
-
+  // Hapus Kategori
   deleteCategory: async (id) => {
     try {
       await api.delete(`/categories/${id}`);
@@ -129,8 +113,7 @@ export const useFinanceStore = create((set) => ({
       return { success: false, message: "Gagal menghapus kategori" };
     }
   },
-
-  // --- UPDATE KATEGORI ---
+  // Update Kategori
   updateCategory: async (id, updatedData) => {
     try {
       const response = await api.put(`/categories/${id}`, updatedData);
@@ -145,14 +128,11 @@ export const useFinanceStore = create((set) => ({
       return { success: false, message: "Gagal memperbarui kategori" };
     }
   },
-
-  // 3. Tambah Transaksi
+  // Tambah Transaksi
   addTransaction: async (transactionData) => {
     try {
       const response = await api.post("/transactions", transactionData);
       const newTransaction = response.data.transaction;
-
-      // Update state: Tambahkan transaksi ke list & sesuaikan saldo dompet di Frontend
       set((state) => {
         const updatedWallets = state.wallets.map((w) => {
           if (w.id === parseInt(newTransaction.wallet_id)) {
@@ -179,56 +159,40 @@ export const useFinanceStore = create((set) => ({
       return { success: false, message: "Gagal mencatat transaksi" };
     }
   },
-
-  // --- HAPUS TRANSAKSI ---
+  // Hapus Transaksi
   deleteTransaction: async (id) => {
     try {
-      // 1. Kirim perintah hapus ke Laravel
       await api.delete(`/transactions/${id}`);
-
-      // 2. Karena penghapusan transaksi juga mengubah saldo dompet di database,
-      // cara paling aman dan akurat adalah menarik ulang data terbaru dari server.
       const store = useFinanceStore.getState();
       await store.fetchInitialData();
-
       return { success: true };
     } catch (error) {
       console.error("Error deleteTransaction:", error);
       return { success: false, message: "Gagal menghapus transaksi" };
     }
   },
-
-  // --- UPDATE TRANSAKSI ---
+  // Update Transaksi
   updateTransaction: async (id, updatedData) => {
     try {
       await api.put(`/transactions/${id}`, updatedData);
-
-      // Tarik ulang data agar saldo dompet dan grafik otomatis menyesuaikan
       const store = useFinanceStore.getState();
       await store.fetchInitialData();
-
       return { success: true };
     } catch (error) {
       console.error("Error updateTransaction:", error);
       return { success: false, message: "Gagal memperbarui transaksi" };
     }
   },
-
-  // --- TRANSFER ---
+  // Transfer antar dompet
   transfer: async (transferData) => {
     try {
-      // 1. Kirim request ke Laravel
       await api.post("/wallets/transfer", {
         from_wallet_id: transferData.fromWalletId,
         to_wallet_id: transferData.toWalletId,
         amount: transferData.amount,
       });
-
-      // 2. Ambil ulang data dari server untuk memastikan sinkronisasi 100% akurat
-      // Karena transfer mengubah 2 dompet dan 1 histori transaksi sekaligus
       const store = useFinanceStore.getState();
       await store.fetchInitialData();
-
       return { success: true };
     } catch (error) {
       console.error("Error transfer:", error);

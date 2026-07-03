@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
 import { X, Calendar, DollarSign, Type } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
@@ -7,17 +8,13 @@ const BillModal = () => {
   const { isBillModalOpen, closeBillModal, selectedBill } = useUIStore();
   const { addBill, updateBill } = useBillStore();
   const [isLoading, setIsLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     title: "",
     amount: "",
-    due_date: "", // Tanggal 1-31
+    due_date: "",
   });
-
-  // Isi form jika sedang dalam mode Edit
   useEffect(() => {
     if (selectedBill && isBillModalOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         title: selectedBill.title,
         amount: selectedBill.amount,
@@ -27,33 +24,24 @@ const BillModal = () => {
       setFormData({ title: "", amount: "", due_date: "" });
     }
   }, [selectedBill, isBillModalOpen]);
-
   if (!isBillModalOpen) return null;
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validasi sederhana
     if (formData.due_date < 1 || formData.due_date > 31) {
       alert("Tanggal jatuh tempo harus antara 1 sampai 31.");
       return;
     }
-
     setIsLoading(true);
-
     let result;
     if (selectedBill) {
       result = await updateBill(selectedBill.id, formData);
     } else {
       result = await addBill(formData);
     }
-
     setIsLoading(false);
-
     if (result.success) {
       closeBillModal();
     } else {
@@ -62,8 +50,8 @@ const BillModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
-      <div className="bg-white w-full max-w-sm rounded-[2rem] p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
+      <div className="bg-white w-full max-w-sm rounded-4xl p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-xl text-gray-800">
             {selectedBill ? "Edit Tagihan" : "Tambah Tagihan"}
@@ -75,7 +63,6 @@ const BillModal = () => {
             <X size={20} />
           </button>
         </div>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Judul Tagihan */}
           <div>
@@ -97,7 +84,6 @@ const BillModal = () => {
               />
             </div>
           </div>
-
           {/* Jumlah Tagihan */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 ml-1">
@@ -119,7 +105,6 @@ const BillModal = () => {
               />
             </div>
           </div>
-
           {/* Tanggal Jatuh Tempo */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 ml-1">
@@ -142,7 +127,6 @@ const BillModal = () => {
               />
             </div>
           </div>
-
           <button
             type="submit"
             disabled={isLoading}

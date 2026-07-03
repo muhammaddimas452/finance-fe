@@ -12,8 +12,6 @@ import { useEffect } from "react";
 import WalletModal from "../ui/WalletModal";
 import ProfileModal from "../ui/ProfileModal";
 import BillModal from "../ui/BillModal";
-
-// Import Store
 import { useFinanceStore } from "../../store/useFinanceStore";
 
 function MainLayout({ children }) {
@@ -32,12 +30,11 @@ function MainLayout({ children }) {
     if (isAuthenticated) {
       fetchInitialData();
     } else {
-      clearData(); // Bersihkan data jika tidak login
+      clearData();
     }
   }, [isAuthenticated, fetchInitialData, clearData]);
 
   return (
-    // Background luar: padding hilang di mobile agar full screen
     <div className="min-h-screen bg-background p-0 md:p-4 lg:p-8 flex items-center justify-center font-sans">
       <TransactionModal />
       <TransferModal />
@@ -51,7 +48,7 @@ function MainLayout({ children }) {
       <div className="bg-white w-full max-w-[1400px] h-screen md:h-[90vh] md:min-h-[700px] rounded-none md:rounded-[2.5rem] shadow-none md:shadow-soft flex overflow-hidden border-none md:border border-white/50 relative">
         {/* Mobile Header (Hanya muncul di layar kecil) */}
         <div className="md:hidden flex items-center justify-between p-6 bg-white w-full absolute top-0 z-20 shadow-sm">
-          {/* Tombol Menu Kiri */}
+          {/* Tombol Menu */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}
             className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
@@ -59,7 +56,7 @@ function MainLayout({ children }) {
             <Menu size={24} />
           </button>
 
-          {/* Logo di Tengah */}
+          {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-black font-bold text-xl">
               <AlignEndHorizontal />
@@ -67,12 +64,11 @@ function MainLayout({ children }) {
             <span className="text-xl font-bold text-gray-800">mooney</span>
           </div>
 
-          {/* Tombol Profile Kanan / Untuk Right Panel */}
+          {/* Tombol Profile/Right Panel */}
           <button
             onClick={() => setIsRightPanelOpen(true)}
             className="w-10 h-10 rounded-full overflow-hidden shadow-md border-2 border-white hover:ring-2 hover:ring-[#5b58ff] transition-all cursor-pointer bg-gray-100 flex items-center justify-center"
           >
-            {/* LOGIKA PERBAIKAN AVATAR */}
             {isAuthenticated && user?.avatar ? (
               <img
                 src={user.avatar}
@@ -86,8 +82,6 @@ function MainLayout({ children }) {
         </div>
         {/* Kolom 1: Sidebar Kiri (Passing state untuk mobile) */}
         <Sidebar />
-
-        {/* Overlay gelap saat menu mobile terbuka */}
         {(isMobileMenuOpen || isRightPanelOpen) && (
           <div
             className="fixed inset-0 bg-black/20 z-30 md:hidden"
@@ -97,14 +91,11 @@ function MainLayout({ children }) {
             }}
           />
         )}
-
         {/* Kolom 2: Area Konten Utama */}
-
         {/* Tambahkan padding-top di mobile agar tidak tertutup header */}
         <main className="flex-1 bg-[#fbfbfe] md:rounded-3xl m-0 md:m-3 p-6 md:p-8 pt-24 md:pt-8 overflow-y-auto shadow-none md:shadow-inner">
           {children}
         </main>
-
         {/* Kolom 3: Sidebar Kanan (Disembunyikan di layar < 1024px) */}
         <RightPanel />
       </div>

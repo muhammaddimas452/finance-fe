@@ -17,27 +17,17 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { useUIStore } from "../../store/useUIStore";
 
 const Dashboard = () => {
-  // 1. Ambil data transaksi dari global state
   const { transactions } = useFinanceStore();
-
   const { user, isAuthenticated } = useAuthStore();
   const { setIsRightPanelOpen } = useUIStore();
-
-  // 2. Hitung Efisiensi (Total Pemasukan vs Total Pengeluaran)
   const totalIncome = transactions
     .filter((t) => t.type === "income")
     .reduce((total, t) => total + parseFloat(t.amount || 0), 0);
-
   const totalExpense = transactions
     .filter((t) => t.type === "expense")
     .reduce((total, t) => total + parseFloat(t.amount || 0), 0);
-
-  // Hitung persentase sisa uang (Net) dari Income
   const netIncome = totalIncome - totalExpense;
-  // const efficiencyPercentage =
   totalIncome > 0 ? Math.round((netIncome / totalIncome) * 100) : 0;
-
-  // 3. Proses Data untuk Bar Chart (History 6 Bulan Terakhir)
   const monthNames = [
     "JAN",
     "FEB",
@@ -53,40 +43,28 @@ const Dashboard = () => {
     "DEC",
   ];
   const currentMonthIndex = new Date().getMonth();
-
-  // Buat array 6 bulan ke belakang
   const last6Months = Array.from({ length: 6 }).map((_, i) => {
     let d = new Date();
     d.setMonth(currentMonthIndex - 5 + i);
     return monthNames[d.getMonth()];
   });
-
-  // Siapkan template wadah data per bulan
   let historyData = last6Months.map((month) => ({
     name: month,
     income: 0,
     expense: 0,
   }));
-
-  // Masukkan data transaksi asli ke dalam bulan yang sesuai
   transactions.forEach((t) => {
-    // Pastikan tanggalnya valid sebelum diproses
     if (!t.date) return;
-
     const tMonth = monthNames[new Date(t.date).getMonth()];
     const monthEntry = historyData.find((m) => m.name === tMonth);
-
     if (monthEntry) {
-      // Bungkus t.amount dengan parseFloat agar pasti menjadi angka bulat murni
       if (t.type === "income") monthEntry.income += parseFloat(t.amount || 0);
       if (t.type === "expense") monthEntry.expense += parseFloat(t.amount || 0);
     }
   });
-
-  // 4. Data untuk Line Chart (Cash Flow Trend = Income - Expense per bulan)
   const cashFlowData = historyData.map((m) => ({
     name: m.name,
-    balance: m.income - m.expense, // Saldo bersih bulan tersebut
+    balance: m.income - m.expense,
   }));
 
   return (
@@ -96,7 +74,6 @@ const Dashboard = () => {
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
           Dashboard
         </h1>
-
         {/* Search Bar */}
         <div className="hidden md:flex bg-white px-4 py-3 rounded-2xl shadow-soft text-gray-400 items-center gap-3 w-72">
           <Search size={18} />
@@ -106,8 +83,7 @@ const Dashboard = () => {
             className="bg-transparent border-none outline-none w-full text-sm text-gray-700"
           />
         </div>
-
-        {/* TOMBOL PROFILE: Hanya muncul di Tablet (md), hilang di Mobile dan Desktop (lg) */}
+        {/* TOMBOL PROFILE */}
         <button
           onClick={() => setIsRightPanelOpen(true)}
           className="hidden md:flex lg:hidden w-10 h-10 rounded-full overflow-hidden shadow-md border-2 border-white hover:ring-2 hover:ring-[#5b58ff] transition-all cursor-pointer bg-gray-100 items-center justify-center"
@@ -123,15 +99,13 @@ const Dashboard = () => {
           )}
         </button>
       </header>
-
       {/* Grid Layout untuk Konten */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         {/* ROW 1: Balance Card (Kiri 5/12) & Exchange Rates (Kanan 7/12) */}
-        <div className="xl:col-span-5 h-[220px]">
+        <div className="xl:col-span-5 h-55">
           <BalanceCard />
         </div>
-
-        <div className="xl:col-span-7 bg-white rounded-[2rem] p-6 shadow-soft h-[250px] xl:h-[220px] flex flex-col">
+        <div className="xl:col-span-7 bg-white rounded-4xl p-6 shadow-soft h-62.5 xl:h-55 flex flex-col">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-gray-800">Cash Flow Trend</h3>
             <span className="text-xs font-semibold text-gray-400">
@@ -180,9 +154,8 @@ const Dashboard = () => {
             </ResponsiveContainer>
           </div>
         </div>
-
         {/* ROW 2: History (Kiri 7/12) & Efficiency (Kanan 5/12) */}
-        <div className="xl:col-span-7 bg-white rounded-[2rem] p-6 shadow-soft h-[300px] flex flex-col">
+        <div className="xl:col-span-7 bg-white rounded-4xl p-6 shadow-soft h-75 flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-gray-800">Income vs Expense</h3>
             <button className="text-gray-400 hover:text-gray-600">
