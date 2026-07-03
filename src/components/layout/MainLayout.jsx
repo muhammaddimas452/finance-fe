@@ -35,7 +35,7 @@ function MainLayout({ children }) {
   }, [isAuthenticated, fetchInitialData, clearData]);
 
   return (
-    <div className="min-h-screen bg-background p-0 md:p-4 lg:p-8 flex items-center justify-center font-sans">
+    <div className="min-h-screen bg-white flex font-sans">
       <TransactionModal />
       <TransferModal />
       <CategoryModal />
@@ -45,7 +45,7 @@ function MainLayout({ children }) {
       <ProfileModal />
       <BillModal />
       {/* Container Aplikasi: border-radius dan height disesuaikan untuk mobile */}
-      <div className="bg-white w-full max-w-[1400px] h-screen md:h-[90vh] md:min-h-[700px] rounded-none md:rounded-[2.5rem] shadow-none md:shadow-soft flex overflow-hidden border-none md:border border-white/50 relative">
+      <div className="bg-white w-full h-screen md:h-[90vh] md:min-h-175 rounded-none md:rounded-[2.5rem] shadow-none md:shadow-soft flex overflow-hidden border-none md:border border-white/50 relative">
         {/* Mobile Header (Hanya muncul di layar kecil) */}
         <div className="md:hidden flex items-center justify-between p-6 bg-white w-full absolute top-0 z-20 shadow-sm">
           {/* Tombol Menu */}
