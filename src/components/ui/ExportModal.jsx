@@ -1,11 +1,17 @@
+// src/components/ui/ExportModal.jsx
 import { useState } from "react";
-import axios from "axios"; // atau custom axios instance Anda
+import { X } from "lucide-react";
+import { useFinanceStore } from "../../store/useFinanceStore";
+import { downloadPDF } from "../../utils/exportData";
 
-const ExportModal = () => {
+const ExportModal = ({ isOpen, onClose }) => {
+  const { transactions } = useFinanceStore();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // Fungsi pembantu untuk mengatur "Bulan Ini"
+  // Jika isOpen bernilai false, jangan tampilkan apa-apa (null)
+  if (!isOpen) return null;
+
   const setThisMonth = () => {
     const date = new Date();
     const firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
@@ -19,74 +25,88 @@ const ExportModal = () => {
     setEndDate(lastDay);
   };
 
-  const handleExport = async () => {
-    try {
-      // Panggil API dengan parameter tanggal
-      const response = await axios.get("/api/export/transactions", {
-        params: {
-          start_date: startDate,
-          end_date: endDate,
-        },
-        responseType: "blob", // SANGAT PENTING untuk mengunduh file
-      });
+  const handleExportFiltered = () => {
+    let dataToExport = transactions;
 
-      // Logika standar untuk mengunduh file dari blob di browser
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute(
-        "download",
-        `transaksi-${startDate}-sampai-${endDate}.pdf`,
-      ); // atau .csv
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Gagal mengekspor data", error);
+    if (startDate && endDate) {
+      dataToExport = transactions.filter((t) => {
+        const tDate = new Date(t.date);
+        return tDate >= new Date(startDate) && tDate <= new Date(endDate);
+      });
     }
+
+    downloadPDF(dataToExport);
+
+    // Reset state dan tutup modal
+    setStartDate("");
+    setEndDate("");
+    onClose();
   };
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-md">
-      <h3 className="font-bold mb-4">Export Transactions</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="bg-white p-6 rounded-3xl shadow-xl w-11/12 max-w-md relative animate-in fade-in zoom-in duration-200">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
+        >
+          <X size={20} />
+        </button>
 
-      {/* Tombol Pintasan */}
-      <button
-        onClick={setThisMonth}
-        className="mb-4 text-sm text-blue-500 underline"
-      >
-        Pilih Bulan Ini
-      </button>
+        <h3 className="text-xl font-bold text-gray-800 mb-4">
+          Pilih Periode Export
+        </h3>
 
-      {/* Input Tanggal Kustom */}
-      <div className="flex gap-4 mb-4">
-        <div>
-          <label className="block text-xs text-gray-500">Dari</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="border rounded px-2 py-1"
-          />
+        <button
+          onClick={setThisMonth}
+          className="text-sm text-brand-500 font-medium mb-4 hover:underline"
+        >
+          Pilih Bulan Ini
+        </button>
+
+        <div className="flex flex-col gap-4 mb-6">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Dari Tanggal
+            </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Sampai Tanggal
+            </label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-xs text-gray-500">Sampai</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="border rounded px-2 py-1"
-          />
+
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 rounded-xl transition-colors"
+          >
+            Batal
+          </button>
+          <button
+            onClick={handleExportFiltered}
+            disabled={!startDate || !endDate}
+            className="flex-1 bg-[#5b58ff] hover:bg-[#4a47e6] text-white font-medium py-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Download PDF
+          </button>
         </div>
       </div>
-
-      <button
-        onClick={handleExport}
-        disabled={!startDate || !endDate}
-        className="w-full bg-[#5b58ff] text-white py-2 rounded-lg disabled:opacity-50"
-      >
-        Download File
-      </button>
     </div>
   );
 };
+
+export default ExportModal;

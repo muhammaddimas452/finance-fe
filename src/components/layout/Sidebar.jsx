@@ -1,3 +1,4 @@
+// src/components/layout/Sidebar.jsx (Sesuaikan letak foldernya)
 import { useState } from "react";
 import {
   LayoutDashboard,
@@ -11,18 +12,16 @@ import {
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { Link, useLocation } from "react-router-dom";
-import { useFinanceStore } from "../../store/useFinanceStore";
-import { downloadPDF } from "../../utils/exportData";
+
+// IMPORT KOMPONEN MODAL YANG BARU DIBUAT
+import ExportModal from "../ui/ExportModal";
 
 const Sidebar = () => {
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useUIStore();
   const location = useLocation();
-  const { transactions } = useFinanceStore();
 
-  // 1. STATE UNTUK MODAL & FILTER TANGGAL
+  // State untuk mengontrol buka/tutup modal
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
 
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, active: true, path: "/" },
@@ -37,43 +36,6 @@ const Sidebar = () => {
     { name: "Bills", icon: ReceiptText, active: false, path: "/bills" },
   ];
 
-  // 2. FUNGSI BANTUAN "BULAN INI"
-  const setThisMonth = () => {
-    const date = new Date();
-    // Mendapatkan tanggal 1 bulan ini
-    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
-      .toISOString()
-      .split("T")[0];
-    // Mendapatkan tanggal terakhir bulan ini
-    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0)
-      .toISOString()
-      .split("T")[0];
-
-    setStartDate(firstDay);
-    setEndDate(lastDay);
-  };
-
-  // 3. FUNGSI EKSEKUSI FILTER SEBELUM DOWNLOAD
-  const handleExportFiltered = () => {
-    let dataToExport = transactions;
-
-    // Jika user mengisi tanggal, filter datanya
-    if (startDate && endDate) {
-      dataToExport = transactions.filter((t) => {
-        const tDate = new Date(t.date);
-        return tDate >= new Date(startDate) && tDate <= new Date(endDate);
-      });
-    }
-
-    // Panggil fungsi downloadPDF bawaan Anda dengan data yang sudah disaring
-    downloadPDF(dataToExport);
-
-    // Tutup modal setelah berhasil
-    setIsExportModalOpen(false);
-    setStartDate("");
-    setEndDate("");
-  };
-
   return (
     <>
       <aside
@@ -84,7 +46,6 @@ const Sidebar = () => {
         md:translate-x-0 md:shadow-none shadow-2xl
       `}
       >
-        {/* Header Sidebar */}
         <div className="flex items-center justify-between mb-12 px-2">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-black font-bold text-xl">
@@ -100,7 +61,6 @@ const Sidebar = () => {
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 space-y-2 overflow-y-auto pr-2 pb-4">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -129,7 +89,7 @@ const Sidebar = () => {
           })}
         </nav>
 
-        {/* Export Data Section */}
+        {/* Tombol Export Data */}
         <div className="sm:block bg-brand-50 rounded-3xl p-5 text-center mt-auto">
           <div className="bg-[#fbfbfe] w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-sm">
             <Download size={24} className="text-brand-500" />
@@ -139,8 +99,7 @@ const Sidebar = () => {
           </h4>
           <p className="text-xs text-gray-500 mb-4">Download PDF</p>
           <button
-            // UBAH: Buka Modal, bukan langsung download
-            onClick={() => setIsExportModalOpen(true)}
+            onClick={() => setIsExportModalOpen(true)} // Aksi membuka modal
             className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white text-sm font-medium py-3 rounded-2xl cursor-pointer transition-colors shadow-lg shadow-brand-500/30"
           >
             Export Filter
@@ -148,72 +107,11 @@ const Sidebar = () => {
         </div>
       </aside>
 
-      {/* 4. MODAL POP-UP EXPORT OVERLAY */}
-      {isExportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white p-6 rounded-3xl shadow-xl w-11/12 max-w-md relative animate-in fade-in zoom-in duration-200">
-            {/* Tombol Tutup (X) */}
-            <button
-              onClick={() => setIsExportModalOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
-            >
-              <X size={20} />
-            </button>
-
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
-              Pilih Periode Export
-            </h3>
-
-            <button
-              onClick={setThisMonth}
-              className="text-sm text-brand-500 font-medium mb-4 hover:underline"
-            >
-              Pilih Bulan Ini
-            </button>
-
-            <div className="flex flex-col gap-4 mb-6">
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
-                  Dari Tanggal
-                </label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">
-                  Sampai Tanggal
-                </label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsExportModalOpen(false)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 rounded-xl transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleExportFiltered}
-                disabled={!startDate || !endDate}
-                className="flex-1 bg-[#5b58ff] hover:bg-[#4a47e6] text-white font-medium py-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Download PDF
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* PANGGIL KOMPONEN MODAL DI SINI */}
+      <ExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+      />
     </>
   );
 };
