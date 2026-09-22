@@ -1,10 +1,40 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: "autoUpdate", // Otomatis update jika ada versi web baru
+      includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+      manifest: {
+        name: "Mooney - Personal Finance",
+        short_name: "Mooney",
+        description:
+          "Aplikasi manajemen keuangan pribadi yang mudah dan praktis.",
+        theme_color: "#5b58ff", // Warna brand (ungu) untuk tema browser
+        background_color: "#ffffff", // Warna latar saat splash screen
+        display: "standalone", // Menghilangkan URL bar (tampil layaknya aplikasi native)
+        icons: [
+          {
+            src: "/icon-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "/icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable", // Agar bentuk ikon bisa menyesuaikan OS (lingkaran/kotak)
+          },
+        ],
+      },
+    }),
+    tailwindcss(),
+  ],
   darkMode: "class",
   theme: {
     extend: {
