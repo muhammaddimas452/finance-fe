@@ -13,6 +13,7 @@ export default defineConfig({
       manifest: {
         name: "Mooney - Personal Finance",
         short_name: "Mooney",
+        id: "/",
         description:
           "Aplikasi manajemen keuangan pribadi yang mudah dan praktis.",
         theme_color: "#5b58ff", // Warna brand (ungu) untuk tema browser
