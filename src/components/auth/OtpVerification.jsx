@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
-import axios from "../../lib/axios"; // Sesuaikan dengan instance axios Anda
+import api from "../../lib/axios"; // Sesuaikan dengan instance axios Anda
 import { MailCheck, Loader2, LogOut } from "lucide-react";
 
 const OtpVerification = () => {
@@ -16,7 +16,7 @@ const OtpVerification = () => {
     setStatusMsg("");
     
     try {
-      const response = await axios.post("/api/email/verify-otp", { otp_code: otpCode });
+      const response = await api.post("/api/email/verify-otp", { otp_code: otpCode });
       
       // Update state user di Zustand agar memiliki email_verified_at
       // Ini akan otomatis memicu aplikasi untuk mengalihkan user ke Dashboard
@@ -36,7 +36,7 @@ const OtpVerification = () => {
     setIsError(false);
     
     try {
-      const response = await axios.post("/api/email/resend-otp");
+      const response = await api.post("/api/email/resend-otp");
       setIsError(false);
       setStatusMsg(response.data.message);
     } catch (error) {

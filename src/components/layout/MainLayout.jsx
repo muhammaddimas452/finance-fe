@@ -35,9 +35,9 @@ function MainLayout({ children }) {
     }
   }, [isAuthenticated, fetchInitialData, clearData]);
 
-  // PENJAGA GERBANG: Cegat user yang belum verifikasi
-  if (isAuthenticated && user && user.email_verified_at === null) {
-    return <OtpVerification />; // Langsung buang layout dan render kartu OTP
+  /// UBAH BARIS INI: Gunakan tanda ! untuk mengecek apakah datanya kosong/null/undefined
+  if (isAuthenticated && user && !user.email_verified_at) {
+    return <OtpVerification />;
   }
 
   // 2. Jika sudah terverifikasi, lanjutkan merender aplikasi seperti biasa
