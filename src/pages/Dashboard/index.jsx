@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Search, MoreHorizontal, UserIcon } from "lucide-react";
 import {
   LineChart,
@@ -15,11 +16,18 @@ import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useUIStore } from "../../store/useUIStore";
+import axios from "../../lib/axios";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { transactions } = useFinanceStore();
   const { user, isAuthenticated } = useAuthStore();
   const { setIsRightPanelOpen } = useUIStore();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [resendStatus, setResendStatus] = useState("");
+  const [isResending, setIsResending] = useState(false);
   const totalIncome = transactions
     .filter((t) => t.type === "income")
     .reduce((total, t) => total + parseFloat(t.amount || 0), 0);
@@ -42,6 +50,7 @@ const Dashboard = () => {
     "NOV",
     "DEC",
   ];
+
   const currentMonthIndex = new Date().getMonth();
   const last6Months = Array.from({ length: 6 }).map((_, i) => {
     let d = new Date();
@@ -67,8 +76,51 @@ const Dashboard = () => {
     balance: m.income - m.expense,
   }));
 
+  // 1. Tangkap status sukses dari URL setelah klik link di email
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    if (queryParams.get("verified") === "true") {
+      alert("Email berhasil diverifikasi! Silakan muat ulang halaman.");
+      // Hapus parameter dari URL agar rapi
+      navigate("/", { replace: true }); 
+      // Opsional: Panggil API get/me untuk update state user.email_verified_at
+    }
+  }, [location, navigate]);
+
+  // 2. Fungsi untuk memanggil API Kirim Ulang Email
+  const handleResendEmail = async () => {
+    setIsResending(true);
+    try {
+      await axios.post("/api/email/resend");
+      setResendStatus("Email baru telah dikirim. Cek Inbox/Spam Anda.");
+    // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      setResendStatus("Gagal mengirim email. Coba lagi nanti.");
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
+      {/* BANNER PERINGATAN (Hanya muncul jika belum verifikasi) */}
+      {user && !user.email_verified_at && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h3 className="font-bold text-yellow-800">Verifikasi Email Anda</h3>
+            <p className="text-sm text-yellow-700">
+              {resendStatus || "Akun Anda belum diverifikasi. Anda tidak dapat melakukan transaksi sebelum verifikasi email."}
+            </p>
+          </div>
+          <button 
+            onClick={handleResendEmail}
+            disabled={isResending}
+            className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+          >
+            {isResending ? "Mengirim..." : "Kirim Ulang Email"}
+          </button>
+        </div>
+      )}
       {/* Header Area */}
       <header className="flex items-center justify-between mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">

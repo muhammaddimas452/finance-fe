@@ -8,6 +8,7 @@ import CategoryModal from "../ui/CategoryModal";
 import AuthModal from "../ui/AuthModal";
 import LogoutModal from "../ui/LogoutModal";
 import { useAuthStore } from "../../store/useAuthStore";
+import OtpVerification from "../auth/OtpVerification";
 import { useEffect } from "react";
 import WalletModal from "../ui/WalletModal";
 import ProfileModal from "../ui/ProfileModal";
@@ -34,6 +35,12 @@ function MainLayout({ children }) {
     }
   }, [isAuthenticated, fetchInitialData, clearData]);
 
+  // 1. CEGAT DI SINI: Jika user sudah login tapi belum verifikasi, tampilkan kartu OTP
+  if (isAuthenticated && user && user.email_verified_at === null) {
+    return <OtpVerification />;
+  }
+
+  // 2. Jika sudah terverifikasi, lanjutkan merender aplikasi seperti biasa
   return (
     <div className="min-h-screen bg-background p-0 md:p-4 lg:p-8 flex items-center justify-center font-sans">
       <TransactionModal />
