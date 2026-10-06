@@ -4,6 +4,7 @@ import api from "../lib/axios";
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem("user")) || null,
   isAuthenticated: !!localStorage.getItem("auth_token"),
+  isLoading: true,
   login: async (email, password) => {
     try {
       const response = await api.post("/login", { email, password });
@@ -33,6 +34,12 @@ export const useAuthStore = create((set) => ({
       return { success: false, message };
     }
   },
+
+  setUser: (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    set({ user: userData });
+  },
+  
   logout: async () => {
     try {
       await api.post("/logout");

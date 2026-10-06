@@ -21,6 +21,8 @@ const AuthModal = () => {
   });
   // 1. State penampung error
   const [errors, setErrors] = useState({});
+  // 1. TAMBAHKAN STATE LOADING
+  const [isLoading, setIsLoading] = useState(false);
   if (!isAuthModalOpen) return null;
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,12 +63,17 @@ const AuthModal = () => {
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
     }
+    // 2. AKTIFKAN LOADING SEBELUM REQUEST KE SERVER
+    setIsLoading(true);
     let result;
     if (authMode === "login") {
       result = await login(formData.email, formData.password);
     } else {
       result = await register(formData.name, formData.email, formData.password);
     }
+
+    // 3. MATIKAN LOADING SETELAH REQUEST SELESAI
+    setIsLoading(false);
     // 3. Penanganan Hasil dari Server
     if (result.success) {
       closeAuthModal();
@@ -222,9 +229,17 @@ const AuthModal = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-500/30 cursor-pointer transition-all mt-4"
+            disabled={isLoading}
+            className="w-full flex justify-center items-center gap-2 bg-[#5b58ff] hover:bg-[#4a47e6] text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-500/30 cursor-pointer transition-all mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {authMode === "login" ? "Sign In" : "Sign Up"}
+            {isLoading ? (
+              <>
+                <Loader2 size={20} className="animate-spin" />
+                <span>Memproses...</span>
+              </>
+            ) : (
+              authMode === "login" ? "Sign In" : "Sign Up"
+            )}
           </button>
         </form>
       </div>
