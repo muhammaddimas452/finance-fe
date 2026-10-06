@@ -16,7 +16,7 @@ const OtpVerification = () => {
     setStatusMsg("");
     
     try {
-      const response = await api.post("/api/email/verify-otp", { otp_code: otpCode });
+      const response = await api.post("/email/verify-otp", { otp_code: otpCode });
       
       // Update state user di Zustand agar memiliki email_verified_at
       // Ini akan otomatis memicu aplikasi untuk mengalihkan user ke Dashboard
@@ -36,7 +36,7 @@ const OtpVerification = () => {
     setIsError(false);
     
     try {
-      const response = await api.post("/api/email/resend-otp");
+      const response = await api.post("/email/resend-otp");
       setIsError(false);
       setStatusMsg(response.data.message);
     } catch (error) {
