@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
 import axios from "../../lib/axios"; // Sesuaikan dengan instance axios Anda
-import { MailCheck, Loader2 } from "lucide-react";
+import { MailCheck, Loader2, LogOut } from "lucide-react";
 
 const OtpVerification = () => {
-  const { user, setUser } = useAuthStore(); 
+  const { user, setUser, logout } = useAuthStore(); 
   const [otpCode, setOtpCode] = useState("");
   const [statusMsg, setStatusMsg] = useState("");
   const [isError, setIsError] = useState(false);
@@ -51,6 +51,14 @@ const OtpVerification = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans">
       <div className="max-w-md w-full bg-white rounded-[2rem] shadow-xl p-8 text-center">
         
+        <button 
+          onClick={logout}
+          className="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 text-xs font-semibold"
+          title="Batal dan Keluar"
+        >
+          <LogOut size={16} /> Keluar
+        </button>
+
         {/* Icon & Header */}
         <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-brand-500">
           <MailCheck size={32} />
