@@ -5,6 +5,7 @@ import {
   Lock,
   User as UserIcon,
   AlignEndHorizontal,
+  Loader2
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useAuthStore } from "../../store/useAuthStore";

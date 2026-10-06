@@ -35,9 +35,9 @@ function MainLayout({ children }) {
     }
   }, [isAuthenticated, fetchInitialData, clearData]);
 
-  // 1. CEGAT DI SINI: Jika user sudah login tapi belum verifikasi, tampilkan kartu OTP
+  // PENJAGA GERBANG: Cegat user yang belum verifikasi
   if (isAuthenticated && user && user.email_verified_at === null) {
-    return <OtpVerification />;
+    return <OtpVerification />; // Langsung buang layout dan render kartu OTP
   }
 
   // 2. Jika sudah terverifikasi, lanjutkan merender aplikasi seperti biasa
