@@ -46,81 +46,90 @@ const Wallets = () => {
           <Plus size={18} /> Tambah Dompet
         </button>
       </header>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {wallets.map((w) => (
-          <div
-            key={w.id}
-            className="relative overflow-hidden bg-linear-to-br from-[#5b58ff] to-[#8a88ff] p-7 rounded-4xl shadow-xl text-white group hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
-          >
-            <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-black/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div className="relative z-10 flex justify-between items-start mb-8">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-inner">
-                {getIcon(w.icon)}
-              </div>
-              {/* 4. Tombol Aksi */}
-              <div className="flex gap-2 opacity-100 translate-x-4">
-                <button
-                  onClick={() => handleSetPrimary(w.id)}
-                  disabled={w.is_primary} // Tidak bisa diklik jika sudah utama
-                  className={`p-2.5 rounded-xl backdrop-blur-md border transition-colors ${
-                    w.is_primary
-                      ? "bg-yellow-400/30 border-yellow-400/50 text-yellow-300 cursor-not-allowed"
-                      : "bg-white/20 hover:bg-white/40 border-white/10 text-white cursor-pointer"
-                  }`}
-                  title={
-                    w.is_primary
-                      ? "Ini adalah Dompet Utama"
-                      : "Jadikan Dompet Utama"
-                  }
-                >
-                  <Star
-                    size={16}
-                    fill={w.is_primary ? "currentColor" : "none"}
-                  />
-                </button>
-                <button
-                  onClick={() => openWalletModal(w)}
-                  className="p-2.5 bg-white/20 hover:bg-white/40 border border-white/10 rounded-xl backdrop-blur-md transition-colors"
-                  title="Edit Dompet"
-                >
-                  <Edit2 size={16} />
-                </button>
-                <button
-                  onClick={() => {
-                    if (
-                      window.confirm(`Yakin ingin menghapus dompet ${w.name}?`)
-                    ) {
-                      deleteWallet(w.id);
+      {wallets.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+          <Wallet size={48} className="mb-4 opacity-50" />
+          <p className="font-medium">Belum ada dompet yang ditambahkan.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {wallets.map((w) => (
+            <div
+              key={w.id}
+              className="relative overflow-hidden bg-linear-to-br from-[#5b58ff] to-[#8a88ff] p-7 rounded-4xl shadow-xl text-white group hover:-translate-y-1 hover:shadow-2xl transition-all duration-300"
+            >
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-black/10 rounded-full blur-2xl pointer-events-none"></div>
+              <div className="relative z-10 flex justify-between items-start mb-8">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-inner">
+                  {getIcon(w.icon)}
+                </div>
+                {/* 4. Tombol Aksi */}
+                <div className="flex gap-2 opacity-100 translate-x-4">
+                  <button
+                    onClick={() => handleSetPrimary(w.id)}
+                    disabled={w.is_primary} // Tidak bisa diklik jika sudah utama
+                    className={`p-2.5 rounded-xl backdrop-blur-md border transition-colors ${
+                      w.is_primary
+                        ? "bg-yellow-400/30 border-yellow-400/50 text-yellow-300 cursor-not-allowed"
+                        : "bg-white/20 hover:bg-white/40 border-white/10 text-white cursor-pointer"
+                    }`}
+                    title={
+                      w.is_primary
+                        ? "Ini adalah Dompet Utama"
+                        : "Jadikan Dompet Utama"
                     }
-                  }}
-                  className="p-2.5 bg-red-500/80 hover:bg-red-500 border border-red-400/50 rounded-xl backdrop-blur-md transition-colors"
-                  title="Hapus Dompet"
+                  >
+                    <Star
+                      size={16}
+                      fill={w.is_primary ? "currentColor" : "none"}
+                    />
+                  </button>
+                  <button
+                    onClick={() => openWalletModal(w)}
+                    className="p-2.5 bg-white/20 hover:bg-white/40 border border-white/10 rounded-xl backdrop-blur-md transition-colors"
+                    title="Edit Dompet"
+                  >
+                    <Edit2 size={16} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          `Yakin ingin menghapus dompet ${w.name}?`,
+                        )
+                      ) {
+                        deleteWallet(w.id);
+                      }
+                    }}
+                    className="p-2.5 bg-red-500/80 hover:bg-red-500 border border-red-400/50 rounded-xl backdrop-blur-md transition-colors"
+                    title="Hapus Dompet"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+              <div className="relative z-10">
+                <h3 className="font-medium text-white/80 text-sm tracking-wide">
+                  {w.name}
+                </h3>
+                <p
+                  className="text-2xl xl:text-3xl font-bold mt-1 tracking-tight drop-shadow-md truncate w-full"
+                  title={formatRupiah(w.balance)}
                 >
-                  <Trash2 size={16} />
-                </button>
+                  {formatRupiah(w.balance)}
+                </p>
+              </div>
+              <div className="relative z-10 mt-6 pt-4 border-t border-white/20 flex justify-between text-[10px] font-bold uppercase tracking-widest text-white/70">
+                <span>
+                  {w.is_primary ? "Primary Account" : "Standard Wallet"}
+                </span>
+                <span>Active</span>
               </div>
             </div>
-            <div className="relative z-10">
-              <h3 className="font-medium text-white/80 text-sm tracking-wide">
-                {w.name}
-              </h3>
-              <p
-                className="text-2xl xl:text-3xl font-bold mt-1 tracking-tight drop-shadow-md truncate w-full"
-                title={formatRupiah(w.balance)}
-              >
-                {formatRupiah(w.balance)}
-              </p>
-            </div>
-            <div className="relative z-10 mt-6 pt-4 border-t border-white/20 flex justify-between text-[10px] font-bold uppercase tracking-widest text-white/70">
-              <span>
-                {w.is_primary ? "Primary Account" : "Standard Wallet"}
-              </span>
-              <span>Active</span>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
