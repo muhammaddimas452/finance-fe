@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useFinanceStore } from "../../store/useFinanceStore";
 
