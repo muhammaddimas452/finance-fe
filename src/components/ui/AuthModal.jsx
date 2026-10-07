@@ -5,7 +5,7 @@ import {
   Lock,
   User as UserIcon,
   AlignEndHorizontal,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -109,8 +109,8 @@ const AuthModal = () => {
           </h3>
           <p className="text-gray-400 text-sm mt-1">
             {authMode === "login"
-              ? "Masuk untuk mengelola keuanganmu."
-              : "Mulai perjalanan finansialmu hari ini."}
+              ? "Log in to manage your finances."
+              : "Start your financial journey today."}
           </p>
         </div>
         {/* Tab Switcher */}
@@ -157,7 +157,7 @@ const AuthModal = () => {
                 <input
                   type="text"
                   name="name"
-                  placeholder="Nama Lengkap"
+                  placeholder="Full Name"
                   className={`w-full pl-11 pr-4 py-3 bg-gray-50 rounded-xl outline-none border transition-all text-sm font-medium ${
                     errors.name
                       ? "border-red-500 focus:border-red-500 text-red-500 bg-red-50/30"
@@ -236,10 +236,12 @@ const AuthModal = () => {
             {isLoading ? (
               <>
                 <Loader2 size={20} className="animate-spin" />
-                <span>Memproses...</span>
+                <span>Processing...</span>
               </>
+            ) : authMode === "login" ? (
+              "Sign In"
             ) : (
-              authMode === "login" ? "Sign In" : "Sign Up"
+              "Sign Up"
             )}
           </button>
         </form>

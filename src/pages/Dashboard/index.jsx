@@ -82,7 +82,7 @@ const Dashboard = () => {
     if (queryParams.get("verified") === "true") {
       alert("Email berhasil diverifikasi! Silakan muat ulang halaman.");
       // Hapus parameter dari URL agar rapi
-      navigate("/", { replace: true }); 
+      navigate("/", { replace: true });
       // Opsional: Panggil API get/me untuk update state user.email_verified_at
     }
   }, [location, navigate]);
@@ -93,7 +93,7 @@ const Dashboard = () => {
     try {
       await axios.post("/api/email/resend");
       setResendStatus("Email baru telah dikirim. Cek Inbox/Spam Anda.");
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setResendStatus("Gagal mengirim email. Coba lagi nanti.");
     } finally {
@@ -107,17 +107,18 @@ const Dashboard = () => {
       {user && !user.email_verified_at && (
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h3 className="font-bold text-yellow-800">Verifikasi Email Anda</h3>
+            <h3 className="font-bold text-yellow-800">Verified Your Email</h3>
             <p className="text-sm text-yellow-700">
-              {resendStatus || "Akun Anda belum diverifikasi. Anda tidak dapat melakukan transaksi sebelum verifikasi email."}
+              {resendStatus ||
+                "Akun Anda belum diverifikasi. Anda tidak dapat melakukan transaksi sebelum verifikasi email."}
             </p>
           </div>
-          <button 
+          <button
             onClick={handleResendEmail}
             disabled={isResending}
             className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
           >
-            {isResending ? "Mengirim..." : "Kirim Ulang Email"}
+            {isResending ? "Sending" : "Send Again Email"}
           </button>
         </div>
       )}
@@ -255,7 +256,7 @@ const Dashboard = () => {
           </div>
           <div className="flex justify-center gap-6 mt-4 text-xs font-medium text-gray-400">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-brand-500"></div> Income
+              <div className="w-2 h-2 rounded-full bg-[#5b58ff]"></div> Income
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#ffb3c6]"></div> Expense

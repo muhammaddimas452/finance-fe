@@ -18,20 +18,20 @@ const Bills = () => {
     <div className="flex flex-col h-full animate-in fade-in duration-300">
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          Tagihan & Langganan
+          Billing & Subscriptions
         </h1>
         <button
           onClick={() => openBillModal()}
-          className="flex items-center cursor-pointer gap-2 bg-blue-500 hover:bg-blue-600 transition-colors text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30"
+          className="flex items-center cursor-pointer gap-2 bg-[#5b58ff] hover:bg-[#4a47e6] transition-colors text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30"
         >
-          <Plus size={18} /> Tambah Tagihan
+          <Plus size={18} /> Add Bill / Subscription
         </button>
       </header>
 
       {bills.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 text-gray-400">
           <Receipt size={48} className="mb-4 opacity-50" />
-          <p className="font-medium">Belum ada tagihan yang dicatat.</p>
+          <p className="font-medium">No bills have been recorded yet.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -61,7 +61,9 @@ const Bills = () => {
                         : "bg-white/20 border-white/10 text-white hover:bg-white/40" // Non-aktif
                     }`}
                     title={
-                      bill.is_paid ? "Batalkan Lunas" : "Tandai Lunas Bulan Ini"
+                      bill.is_paid
+                        ? "Cancel Full Payment"
+                        : "Mark as Paid for This Month"
                     }
                   >
                     <CheckCircle
@@ -72,7 +74,7 @@ const Bills = () => {
                   <button
                     onClick={() => openBillModal(bill)}
                     className="p-2.5 bg-white/20 hover:bg-white/40 border border-white/10 rounded-xl backdrop-blur-md transition-colors cursor-pointer"
-                    title="Edit Tagihan"
+                    title="Edit Bill"
                   >
                     <Edit2 size={16} />
                   </button>
@@ -80,14 +82,14 @@ const Bills = () => {
                     onClick={() => {
                       if (
                         window.confirm(
-                          `Yakin ingin menghapus tagihan ${bill.title}?`,
+                          `Are you sure you want to delete the bill? ${bill.title}?`,
                         )
                       ) {
                         deleteBill(bill.id);
                       }
                     }}
                     className="p-2.5 bg-red-500/80 hover:bg-red-500 border border-red-400/50 rounded-xl backdrop-blur-md transition-colors cursor-pointer"
-                    title="Hapus Tagihan"
+                    title="Delete Bill"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -106,9 +108,9 @@ const Bills = () => {
               <div className="relative z-10 mt-6 pt-4 border-t border-white/20 flex justify-between items-center text-xs font-bold uppercase tracking-widest text-white/90">
                 <div className="flex items-center gap-1.5">
                   <Clock size={14} />
-                  <span>Tgl {bill.due_date} Tiap Bulan</span>
+                  <span>{bill.due_date} Every Month</span>
                 </div>
-                <span>{bill.is_paid ? "LUNAS" : "BELUM DIBAYAR"}</span>
+                <span>{bill.is_paid ? "PAID" : "UNPAID"}</span>
               </div>
             </div>
           ))}

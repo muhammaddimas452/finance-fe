@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
-import { X, Wallet, CreditCard, Smartphone } from "lucide-react";
+import { X, Wallet, CreditCard, Smartphone, Loader2 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useFinanceStore } from "../../store/useFinanceStore";
 
@@ -8,6 +8,7 @@ const WalletModal = () => {
   const { isWalletModalOpen, closeWalletModal, walletEditData } = useUIStore();
   const { addWallet, updateWallet } = useFinanceStore();
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     balance: "",
@@ -29,12 +30,13 @@ const WalletModal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Nama dompet wajib diisi!";
+    if (!formData.name.trim()) newErrors.name = "The wallet name is required!";
     if (formData.balance === "")
-      newErrors.balance = "Saldo awal tidak boleh kosong!";
+      newErrors.balance = "Initial balance cannot be empty!";
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
     }
+    setIsLoading(true);
     let result;
     if (walletEditData) {
       result = await updateWallet(walletEditData.id, {
@@ -54,13 +56,14 @@ const WalletModal = () => {
       closeWalletModal();
       setFormData({ name: "", balance: "", icon: "Wallet" });
     }
+    setIsLoading(false);
   };
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
       <div className="bg-white w-full max-w-sm rounded-4xl p-8 shadow-2xl animate-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-xl text-gray-800">
-            {walletEditData ? "Edit Dompet" : "Tambah Dompet"}
+            {walletEditData ? "Edit Wallet" : "Add Wallet"}
           </h3>
           <button
             onClick={closeWalletModal}
@@ -73,11 +76,11 @@ const WalletModal = () => {
           {/* Input Nama Dompet */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">
-              Nama Dompet
+              Wallet Name
             </label>
             <input
               type="text"
-              placeholder="Cth: Bank BCA, Dana, Cash"
+              placeholder="Eg: BCA Bank, Dana, Cash"
               className={`w-full p-4 bg-gray-50 rounded-2xl outline-none border transition-all text-sm font-medium ${
                 errors.name
                   ? "border-red-500 focus:border-red-500 text-red-500"
@@ -98,7 +101,7 @@ const WalletModal = () => {
           {/* Input Saldo */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">
-              Saldo Awal (RP)
+              Initial Balance (RP)
             </label>
             <input
               type="number"
@@ -121,14 +124,14 @@ const WalletModal = () => {
             )}
             {walletEditData && (
               <span className="text-[10px] text-gray-400 mt-1 block">
-                *Mengubah saldo di sini akan mengabaikan riwayat transaksi.
+                *Editing the balance here will ignore transaction history.
               </span>
             )}
           </div>
           {/* Input Ikon */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">
-              Pilih Ikon
+              Select Icon
             </label>
             <div className="flex gap-3">
               {[
@@ -151,8 +154,21 @@ const WalletModal = () => {
               ))}
             </div>
           </div>
-          <button className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white py-4 rounded-2xl font-bold shadow-lg shadow-brand-500/30 cursor-pointer transition-all mt-2">
-            {walletEditData ? "Simpan Perubahan" : "Simpan Dompet"}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white py-4 rounded-2xl font-bold shadow-lg shadow-brand-500/30 cursor-pointer transition-all mt-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                {walletEditData ? "Saving..." : "Saving..."}
+              </>
+            ) : walletEditData ? (
+              "Save Changes"
+            ) : (
+              "Save Wallet"
+            )}
           </button>
         </form>
       </div>

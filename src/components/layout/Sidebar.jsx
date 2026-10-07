@@ -51,7 +51,7 @@ const Sidebar = () => {
             <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-black font-bold text-xl">
               <AlignEndHorizontal />
             </div>
-            <span className="text-xl font-bold text-gray-800">mooney</span>
+            <span className="text-xl font-bold text-gray-800">Mooney</span>
           </div>
           <button
             className="md:hidden p-1 text-gray-400 hover:text-gray-800"
@@ -95,14 +95,13 @@ const Sidebar = () => {
             <Download size={24} className="text-brand-500" />
           </div>
           <h4 className="font-semibold text-gray-800 text-sm mb-1">
-            Export Data
+            Download PDF
           </h4>
-          <p className="text-xs text-gray-500 mb-4">Download PDF</p>
           <button
             onClick={() => setIsExportModalOpen(true)} // Aksi membuka modal
             className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white text-sm font-medium py-3 rounded-2xl cursor-pointer transition-colors shadow-lg shadow-brand-500/30"
           >
-            Export Filter
+            Export Data
           </button>
         </div>
       </aside>

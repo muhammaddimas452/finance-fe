@@ -39,7 +39,7 @@ const ProfileModal = () => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        setErrors({ ...errors, avatar: "Ukuran gambar maksimal 2MB!" });
+        setErrors({ ...errors, avatar: "Maximum image size is 2MB!" });
         return;
       }
       setAvatarFile(file);
@@ -51,10 +51,10 @@ const ProfileModal = () => {
     e.preventDefault();
     const newErrors = {};
     if (!formData.name.trim()) {
-      newErrors.name = "Nama lengkap tidak boleh kosong!";
+      newErrors.name = "Full name cannot be empty!";
     }
     if (formData.password && formData.password.length < 6) {
-      newErrors.password = "Password baru minimal 6 karakter!";
+      newErrors.password = "New password must be at least 6 characters!";
     }
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
@@ -81,7 +81,7 @@ const ProfileModal = () => {
     <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
       <div className="bg-white w-full max-w-sm rounded-4xl p-8 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="font-bold text-xl text-gray-800">Pengaturan Profil</h3>
+          <h3 className="font-bold text-xl text-gray-800">Profile Setting</h3>
           <button
             onClick={closeProfileModal}
             className="p-2 hover:bg-gray-100 rounded-full text-gray-400 transition-colors cursor-pointer"
@@ -127,7 +127,7 @@ const ProfileModal = () => {
               className="text-xs text-gray-400 mt-2 font-medium hover:text-brand-500 cursor-pointer transition-colors"
               onClick={() => fileInputRef.current.click()}
             >
-              Klik foto untuk mengubah
+              Tap to change the photo.
             </span>
           )}
         </div>
@@ -140,7 +140,7 @@ const ProfileModal = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 ml-1">
-              EMAIL (TETAP)
+              EMAIL (PERMANENT)
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
@@ -157,7 +157,7 @@ const ProfileModal = () => {
           {/* Nama Lengkap */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 ml-1">
-              NAMA LENGKAP
+              FULL NAME
             </label>
             <div className="relative">
               <div
@@ -186,7 +186,7 @@ const ProfileModal = () => {
           {/* Ubah Password (Opsional) */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1 ml-1">
-              UBAH PASSWORD (OPSIONAL)
+              CHANGE PASSWORD (OPTIONAL)
             </label>
             <div className="relative">
               <div
@@ -197,7 +197,7 @@ const ProfileModal = () => {
               <input
                 type="password"
                 name="password"
-                placeholder="Kosongkan jika tidak ingin diubah"
+                placeholder="Leave empty if you don't want to change"
                 className={`w-full pl-11 pr-4 py-3 bg-gray-50 rounded-xl outline-none border transition-all text-sm font-medium ${
                   errors.password
                     ? "border-red-500 focus:border-red-500"
@@ -218,7 +218,7 @@ const ProfileModal = () => {
             disabled={isLoading}
             className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] disabled:opacity-70 disabled:cursor-not-allowed text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-500/30 cursor-pointer transition-all mt-2"
           >
-            {isLoading ? "Menyimpan..." : "Simpan Perubahan"}
+            {isLoading ? "Saving..." : "Save Changes"}
           </button>
         </form>
       </div>

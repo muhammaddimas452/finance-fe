@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, ArrowRightLeft } from "lucide-react";
+import { X, ArrowRightLeft, Loader2 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useFinanceStore } from "../../store/useFinanceStore";
 
@@ -8,21 +8,23 @@ const TransferModal = () => {
   const { wallets, transfer } = useFinanceStore();
   const [data, setData] = useState({ from: "", to: "", amount: "" });
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   if (!isTransferModalOpen) return null;
   const handleTransfer = async (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!data.from) newErrors.from = "Pilih dompet asal!";
-    if (!data.to) newErrors.to = "Pilih dompet tujuan!";
+    if (!data.from) newErrors.from = "Select the source wallet!";
+    if (!data.to) newErrors.to = "Select the destination wallet!";
     if (data.from && data.to && data.from === data.to) {
-      newErrors.to = "Dompet tujuan tidak boleh sama!";
+      newErrors.to = "The destination wallet cannot be the same!";
     }
     if (!data.amount || data.amount <= 0) {
-      newErrors.amount = "Nominal transfer tidak valid!";
+      newErrors.amount = "The transfer nominal is not valid!";
     }
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
     }
+    setIsLoading(true);
     const result = await transfer({
       fromWalletId: parseInt(data.from),
       toWalletId: parseInt(data.to),
@@ -35,13 +37,14 @@ const TransferModal = () => {
     } else {
       setErrors({ server: result.message });
     }
+    setIsLoading(false);
   };
 
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-opacity">
       <div className="bg-white w-full max-w-sm rounded-4xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="font-bold text-gray-800">Transfer Antar Dompet</h3>
+          <h3 className="font-bold text-gray-800">Inter-Wallet Transfer</h3>
           <button
             onClick={() => {
               closeTransferModal();
@@ -61,7 +64,7 @@ const TransferModal = () => {
           {/* Kolom DARI */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1">
-              DARI
+              FROM
             </label>
             <select
               className={`w-full p-3 bg-gray-50 rounded-xl cursor-pointer outline-none transition-colors text-sm font-medium ${
@@ -75,7 +78,7 @@ const TransferModal = () => {
                 if (errors.from) setErrors({ ...errors, from: null });
               }}
             >
-              <option value="">Pilih Sumber...</option>
+              <option value="">Select Source...</option>
               {wallets.map((w) => (
                 <option key={w.id} value={w.id}>
                   {w.name} - Rp {w.balance.toLocaleString("id-ID")}
@@ -95,7 +98,7 @@ const TransferModal = () => {
           {/* Kolom KE */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1">
-              KE
+              TO
             </label>
             <select
               className={`w-full p-3 bg-gray-50 rounded-xl cursor-pointer outline-none transition-colors text-sm font-medium ${
@@ -109,7 +112,7 @@ const TransferModal = () => {
                 if (errors.to) setErrors({ ...errors, to: null });
               }}
             >
-              <option value="">Pilih Tujuan...</option>
+              <option value="">Select Destination...</option>
               {wallets.map((w) => (
                 <option key={w.id} value={w.id}>
                   {w.name}
@@ -125,7 +128,7 @@ const TransferModal = () => {
           {/* Kolom NOMINAL */}
           <div>
             <label className="block text-xs font-bold text-gray-400 mb-1">
-              NOMINAL (RP)
+              AMOUNT (RP)
             </label>
             <input
               type="number"
@@ -149,9 +152,17 @@ const TransferModal = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] cursor-pointer text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-500/30 mt-2 transition-all"
+            disabled={isLoading}
+            className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] cursor-pointer text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-500/30 mt-2 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Konfirmasi Transfer
+            {isLoading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Confirm Transfer"
+            )}
           </button>
         </form>
       </div>

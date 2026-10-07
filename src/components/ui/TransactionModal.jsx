@@ -11,9 +11,14 @@ const TransactionModal = () => {
     closeTransactionModal,
     transactionEditData,
   } = useUIStore();
+
   const { wallets, categories, addTransaction, updateTransaction } =
     useFinanceStore();
+
   const [errors, setErrors] = useState({});
+  // 1. Tambahkan state untuk mendeteksi status loading
+  const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     title: "",
     amount: "",
@@ -21,41 +26,56 @@ const TransactionModal = () => {
     categoryId: "",
     walletId: "",
   });
+
   useEffect(() => {
     setFormData((prev) => ({ ...prev, type: transactionType }));
   }, [transactionType, isTransactionModalOpen]);
+
   if (!isTransactionModalOpen) return null;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
+
     if (!formData.amount || formData.amount <= 0)
-      newErrors.amount = "Nominal harus lebih dari 0!";
+      newErrors.amount = "The amount must be greater than 0!";
     if (!formData.title.trim())
-      newErrors.title = "Judul transaksi wajib diisi!";
-    if (!formData.walletId)
-      newErrors.walletId = "Pilih dompet terlebih dahulu!";
+      newErrors.title = "Transaction title must be filled!";
+    if (!formData.walletId) newErrors.walletId = "Choose a wallet first!";
+
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
     }
-    const payload = {
-      title: formData.title,
-      amount: formData.amount,
-      type: formData.type,
-      category_id: formData.categoryId || null,
-      wallet_id: formData.walletId,
-      date: formData.date || new Date().toISOString().split("T")[0],
-    };
-    if (transactionEditData) {
-      const result = await updateTransaction(transactionEditData.id, payload);
-      if (result.success) closeTransactionModal();
-    } else {
-      const result = await addTransaction(payload);
-      if (result.success) {
-        closeTransactionModal();
-        setFormData({ amount: "", title: "", categoryId: "", walletId: "" });
+
+    // 2. Aktifkan loading sebelum memulai request ke server
+    setIsLoading(true);
+
+    try {
+      const payload = {
+        title: formData.title,
+        amount: formData.amount,
+        type: formData.type,
+        category_id: formData.categoryId || null,
+        wallet_id: formData.walletId,
+        date: formData.date || new Date().toISOString().split("T")[0],
+      };
+
+      if (transactionEditData) {
+        const result = await updateTransaction(transactionEditData.id, payload);
+        if (result.success) closeTransactionModal();
+      } else {
+        const result = await addTransaction(payload);
+        if (result.success) {
+          closeTransactionModal();
+          setFormData({ amount: "", title: "", categoryId: "", walletId: "" });
+        }
       }
+    } finally {
+      // 3. Matikan loading setelah request selesai (sukses atau gagal)
+      setIsLoading(false);
     }
   };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (errors[e.target.name]) {
@@ -104,7 +124,7 @@ const TransactionModal = () => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              placeholder="e.g., Makan Siang, Gaji Bulanan"
+              placeholder="e.g., Lunch, Monthly Salary"
               className={`w-full bg-gray-50 border text-gray-800 text-sm rounded-xl focus:ring-brand-500 block p-3 outline-none transition-colors ${
                 errors.title
                   ? "border-red-500 focus:border-red-500"
@@ -192,11 +212,21 @@ const TransactionModal = () => {
               )}
             </div>
           </div>
+
+          {/* 4. Update Button dengan kondisi isLoading */}
           <button
             type="submit"
-            className="w-full bg-[#5b58ff] hover:bg-[#4a47e6] text-white cursor-pointer font-medium rounded-xl text-sm px-5 py-3.5 text-center transition-colors shadow-lg shadow-brand-500/30 mt-4"
+            disabled={isLoading}
+            className="w-full flex justify-center items-center gap-2 bg-[#5b58ff] hover:bg-[#4a47e6] text-white font-medium rounded-xl text-sm px-5 py-3.5 text-center transition-colors shadow-lg shadow-brand-500/30 mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Save Transaction
+            {isLoading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : (
+              "Save Transaction"
+            )}
           </button>
         </form>
       </div>

@@ -19,10 +19,10 @@ const LogoutModal = () => {
           <LogOut size={36} className="ml-1" />
         </div>
         {/* Teks Konfirmasi */}
-        <h3 className="font-bold text-2xl text-gray-800 mb-2">Sign Out</h3>
+        <h3 className="font-bold text-2xl text-gray-800 mb-2">Log Out</h3>
         <p className="text-gray-400 text-sm mb-8 px-2 leading-relaxed">
-          Apakah Anda yakin ingin keluar dari Mooney? Anda harus login kembali
-          untuk mengakses data keuangan Anda.
+          Are you sure you want to log out of Mooney? You will need to log in
+          again to access your financial data.
         </p>
         {/* Tombol Aksi */}
         <div className="flex gap-3">
@@ -30,13 +30,13 @@ const LogoutModal = () => {
             onClick={closeLogoutModal}
             className="flex-1 py-3.5 bg-gray-50 hover:bg-gray-100 text-gray-600 font-bold rounded-xl transition-colors cursor-pointer"
           >
-            Batal
+            Cancel
           </button>
           <button
             onClick={handleConfirm}
             className="flex-1 py-3.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 transition-colors cursor-pointer"
           >
-            Ya, Keluar
+            Yes, Log Out
           </button>
         </div>
       </div>

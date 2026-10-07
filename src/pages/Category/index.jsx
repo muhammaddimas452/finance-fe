@@ -14,17 +14,14 @@ const Categories = () => {
       <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-            Kategori
+            Categories
           </h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Kelola pos pemasukan dan pengeluaran Anda.
-          </p>
         </div>
         <button
           onClick={() => openCategoryModal()}
           className="flex items-center justify-center w-full md:w-auto gap-2 bg-[#5b58ff] hover:bg-[#4a47e6] text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-lg transition-all"
         >
-          <Plus size={18} /> Tambah Kategori
+          <Plus size={18} /> Add Category
         </button>
       </header>
       <div className="flex w-full sm:w-fit bg-white p-1.5 rounded-2xl shadow-soft mb-8 border border-gray-50">
@@ -37,7 +34,7 @@ const Categories = () => {
           }`}
           onClick={() => setActiveTab("expense")}
         >
-          Pengeluaran
+          Expense
         </button>
         <button
           type="button"
@@ -48,13 +45,13 @@ const Categories = () => {
           }`}
           onClick={() => setActiveTab("income")}
         >
-          Pemasukan
+          Income
         </button>
       </div>
       {filteredCategories.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 text-gray-400">
           <Tags size={48} className="mb-4 opacity-50" />
-          <p className="font-medium">Belum ada kategori yang ditambahkan.</p>
+          <p className="font-medium">No categories have been added yet.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4">
@@ -81,17 +78,21 @@ const Categories = () => {
                 <button
                   onClick={() => openCategoryModal(cat)}
                   className="p-2 text-gray-400 hover:text-green-500 hover:bg-green-50 rounded-lg transition-all"
-                  title="Edit Kategori"
+                  title="Edit Category"
                 >
                   <Edit3 size={16} />
                 </button>
                 <button
                   onClick={() => {
-                    if (window.confirm("Hapus kategori ini?"))
+                    if (
+                      window.confirm(
+                        "Are you sure you want to delete this category?",
+                      )
+                    )
                       deleteCategory(cat.id);
                   }}
                   className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                  title="Hapus Kategori"
+                  title="Delete Category"
                 >
                   <Trash2 size={16} />
                 </button>

@@ -37,19 +37,19 @@ const Wallets = () => {
     <div className="flex flex-col h-full animate-in fade-in duration-300">
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          Dompet Saya
+          My Wallets
         </h1>
         <button
           onClick={() => openWalletModal()}
           className="flex items-center cursor-pointer gap-2 bg-[#5b58ff] hover:bg-[#4a47e6] transition-colors text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-[#5b58ff]/30"
         >
-          <Plus size={18} /> Tambah Dompet
+          <Plus size={18} /> Add Wallet
         </button>
       </header>
       {wallets.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 text-gray-400">
           <Wallet size={48} className="mb-4 opacity-50" />
-          <p className="font-medium">Belum ada dompet yang ditambahkan.</p>
+          <p className="font-medium">No wallet has been added yet.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -76,8 +76,8 @@ const Wallets = () => {
                     }`}
                     title={
                       w.is_primary
-                        ? "Ini adalah Dompet Utama"
-                        : "Jadikan Dompet Utama"
+                        ? "This is the Main Wallet."
+                        : "Set as Main Wallet"
                     }
                   >
                     <Star
@@ -88,7 +88,7 @@ const Wallets = () => {
                   <button
                     onClick={() => openWalletModal(w)}
                     className="p-2.5 bg-white/20 hover:bg-white/40 border border-white/10 rounded-xl backdrop-blur-md transition-colors"
-                    title="Edit Dompet"
+                    title="Edit Wallet"
                   >
                     <Edit2 size={16} />
                   </button>
@@ -96,14 +96,14 @@ const Wallets = () => {
                     onClick={() => {
                       if (
                         window.confirm(
-                          `Yakin ingin menghapus dompet ${w.name}?`,
+                          `Are you sure you want to delete the wallet? ${w.name}?`,
                         )
                       ) {
                         deleteWallet(w.id);
                       }
                     }}
                     className="p-2.5 bg-red-500/80 hover:bg-red-500 border border-red-400/50 rounded-xl backdrop-blur-md transition-colors"
-                    title="Hapus Dompet"
+                    title="Delete Wallet"
                   >
                     <Trash2 size={16} />
                   </button>

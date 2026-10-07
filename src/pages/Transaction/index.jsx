@@ -18,6 +18,7 @@ const Transactions = () => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   });
+
   const filteredTransactions = transactions.filter((t) => {
     const matchesSearch = t.title
       .toLowerCase()
@@ -26,31 +27,34 @@ const Transactions = () => {
     const matchesMonth = !filterMonth || t.date.startsWith(filterMonth);
     return matchesSearch && matchesType && matchesMonth;
   });
+
   const handleDelete = (id) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus transaksi ini?")) {
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
       deleteTransaction(id);
     }
   };
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-300">
-      <header className="flex flex-col xl:flex-row xl:items-center justify-between mb-8 gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          Semua Transaksi
+      <header className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-8 w-full">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 whitespace-nowrap shrink-0">
+          All Transactions
         </h1>
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+
+        <div className="flex flex-wrap items-center justify-start xl:justify-end gap-3 w-full">
           {/* Search Bar */}
           <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2 w-full sm:w-56 text-sm">
             <Search size={18} className="text-gray-400 shrink-0" />
             <input
               type="text"
-              placeholder="Cari transaksi..."
+              placeholder="Search transactions..."
               className="bg-transparent border-none outline-none w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          {/* Filter Bulan */}
+
+          {/* Month Filter */}
           <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2 text-sm">
             <Calendar size={18} className="text-gray-400 shrink-0" />
             <input
@@ -60,7 +64,8 @@ const Transactions = () => {
               onChange={(e) => setFilterMonth(e.target.value)}
             />
           </div>
-          {/* Filter Type */}
+
+          {/* Type Filter */}
           <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2 text-sm">
             <Filter size={18} className="text-gray-400 shrink-0" />
             <select
@@ -68,13 +73,14 @@ const Transactions = () => {
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
             >
-              <option value="all">Semua Tipe</option>
-              <option value="income">Pemasukan</option>
-              <option value="expense">Pengeluaran</option>
+              <option value="all">All Types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
             </select>
           </div>
         </div>
       </header>
+
       {/* Table Container */}
       <div className="bg-white rounded-4xl shadow-soft overflow-hidden flex-1 flex flex-col border border-gray-50">
         <div className="overflow-x-auto custom-scrollbar">
@@ -82,19 +88,19 @@ const Transactions = () => {
             <thead>
               <tr className="bg-gray-50/80 border-b border-gray-100">
                 <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                  Transaksi
+                  Transaction
                 </th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                  Kategori
+                  Category
                 </th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                  Tanggal
+                  Date
                 </th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">
-                  Nominal
+                  Amount
                 </th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">
-                  Aksi
+                  Action
                 </th>
               </tr>
             </thead>
@@ -122,10 +128,11 @@ const Transactions = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">
-                      {t.category?.name || "Lainnya"}
+                      {t.category?.name || "Others"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-medium">
-                      {new Date(t.date).toLocaleDateString("id-ID", {
+                      {/* Diubah menjadi 'en-US' untuk format tanggal Inggris */}
+                      {new Date(t.date).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
@@ -140,7 +147,7 @@ const Transactions = () => {
                       <button
                         onClick={() => handleDelete(t.id)}
                         className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all cursor-pointer"
-                        title="Hapus Transaksi"
+                        title="Delete Transaction"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -156,10 +163,10 @@ const Transactions = () => {
                     <div className="flex flex-col items-center justify-center gap-2">
                       <Search size={32} className="opacity-20 mb-2" />
                       <p className="font-medium text-sm">
-                        Tidak ada transaksi yang ditemukan.
+                        No transactions found.
                       </p>
                       <p className="text-xs opacity-70">
-                        Coba ubah kata kunci atau filter bulan.
+                        Try changing the keyword or month filter.
                       </p>
                     </div>
                   </td>

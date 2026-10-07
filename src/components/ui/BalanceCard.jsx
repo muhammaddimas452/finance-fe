@@ -44,7 +44,7 @@ const BalanceCard = () => {
         <div className="flex justify-between items-end">
           <div>
             <p className="font-semibold text-sm">
-              {primaryWallet ? primaryWallet.name : "Belum Ada Dompet"}
+              {primaryWallet ? primaryWallet.name : "No wallet yet"}
             </p>
           </div>
           <div className="text-right">
