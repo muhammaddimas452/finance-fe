@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { useUIStore } from "../../store/useUIStore";
-import { Plus, Trash2, Edit3, Tag } from "lucide-react";
+import { Plus, Trash2, Edit3, Tag, Tags } from "lucide-react";
 
 const Categories = () => {
   const { categories, deleteCategory } = useFinanceStore();
@@ -51,45 +51,55 @@ const Categories = () => {
           Pemasukan
         </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4">
-        {filteredCategories.map((cat) => (
-          <div
-            key={cat.id}
-            className="relative bg-white p-5 shadow-soft border border-gray-50 flex items-center group overflow-hidden"
-          >
-            {/* Ikon Tag */}
-            <div className="w-12 h-12 shrink-0 bg-brand-50 text-brand-500 rounded-2xl flex items-center justify-center mr-4">
-              <Tag size={20} />
+      {filteredCategories.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+          <Tags size={48} className="mb-4 opacity-50" />
+          <p className="font-medium">Belum ada kategori yang ditambahkan.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 gap-4">
+          {filteredCategories.map((cat) => (
+            <div
+              key={cat.id}
+              className="relative bg-white p-5 shadow-soft border border-gray-50 flex items-center group overflow-hidden"
+            >
+              {/* Ikon Tag */}
+              <div className="w-12 h-12 shrink-0 bg-brand-50 text-brand-500 rounded-2xl flex items-center justify-center mr-4">
+                <Tag size={20} />
+              </div>
+              {/* Teks Kategori */}
+              <div className="flex-1 overflow-hidden">
+                <p
+                  className="font-bold text-gray-700 truncate"
+                  title={cat.name}
+                >
+                  {cat.name}
+                </p>
+              </div>
+              {/* Tombol Aksi */}
+              <div className="right-3 flex gap-1 opacity-100 transition-opacity bg-white pl-4 py-2">
+                <button
+                  onClick={() => openCategoryModal(cat)}
+                  className="p-2 text-gray-400 hover:text-green-500 hover:bg-green-50 rounded-lg transition-all"
+                  title="Edit Kategori"
+                >
+                  <Edit3 size={16} />
+                </button>
+                <button
+                  onClick={() => {
+                    if (window.confirm("Hapus kategori ini?"))
+                      deleteCategory(cat.id);
+                  }}
+                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                  title="Hapus Kategori"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
             </div>
-            {/* Teks Kategori */}
-            <div className="flex-1 overflow-hidden">
-              <p className="font-bold text-gray-700 truncate" title={cat.name}>
-                {cat.name}
-              </p>
-            </div>
-            {/* Tombol Aksi */}
-            <div className="right-3 flex gap-1 opacity-100 transition-opacity bg-white pl-4 py-2">
-              <button
-                onClick={() => openCategoryModal(cat)}
-                className="p-2 text-gray-400 hover:text-green-500 hover:bg-green-50 rounded-lg transition-all"
-                title="Edit Kategori"
-              >
-                <Edit3 size={16} />
-              </button>
-              <button
-                onClick={() => {
-                  if (window.confirm("Hapus kategori ini?"))
-                    deleteCategory(cat.id);
-                }}
-                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                title="Hapus Kategori"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
