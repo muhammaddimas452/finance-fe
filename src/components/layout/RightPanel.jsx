@@ -185,7 +185,7 @@ const RightPanel = () => {
                     {trx.title}
                   </p>
                   <p className="text-[10px] text-gray-400 font-medium">
-                    {trx.category?.name || "Tanpa Kategori"}
+                    {trx.category?.name || "Uncategorized"}
                   </p>
                 </div>
               </div>

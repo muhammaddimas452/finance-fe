@@ -76,26 +76,24 @@ const Dashboard = () => {
     balance: m.income - m.expense,
   }));
 
-  // 1. Tangkap status sukses dari URL setelah klik link di email
+  // 1. Capture success status from URL
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     if (queryParams.get("verified") === "true") {
-      alert("Email berhasil diverifikasi! Silakan muat ulang halaman.");
-      // Hapus parameter dari URL agar rapi
+      alert("Email verified successfully! Please reload the page.");
       navigate("/", { replace: true });
-      // Opsional: Panggil API get/me untuk update state user.email_verified_at
     }
   }, [location, navigate]);
 
-  // 2. Fungsi untuk memanggil API Kirim Ulang Email
+  // 2. Resend verification email
   const handleResendEmail = async () => {
     setIsResending(true);
     try {
       await axios.post("/api/email/resend");
-      setResendStatus("Email baru telah dikirim. Cek Inbox/Spam Anda.");
+      setResendStatus("A new email has been sent. Please check your Inbox or Spam folder.");
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      setResendStatus("Gagal mengirim email. Coba lagi nanti.");
+      setResendStatus("Failed to send email. Please try again later.");
     } finally {
       setIsResending(false);
     }
@@ -103,14 +101,14 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col h-full">
-      {/* BANNER PERINGATAN (Hanya muncul jika belum verifikasi) */}
+      {/* Verification Warning Banner */}
       {user && !user.email_verified_at && (
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h3 className="font-bold text-yellow-800">Verified Your Email</h3>
+            <h3 className="font-bold text-yellow-800">Verify Your Email</h3>
             <p className="text-sm text-yellow-700">
               {resendStatus ||
-                "Akun Anda belum diverifikasi. Anda tidak dapat melakukan transaksi sebelum verifikasi email."}
+                "Your account is not verified yet. Please verify your email to unlock all features."}
             </p>
           </div>
           <button
@@ -118,7 +116,7 @@ const Dashboard = () => {
             disabled={isResending}
             className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
           >
-            {isResending ? "Sending" : "Send Again Email"}
+            {isResending ? "Sending..." : "Resend Email"}
           </button>
         </div>
       )}

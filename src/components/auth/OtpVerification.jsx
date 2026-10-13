@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuthStore } from "../../store/useAuthStore";
-import api from "../../lib/axios"; // Sesuaikan dengan instance axios Anda
+import api from "../../lib/axios";
 import { MailCheck, Loader2, LogOut } from "lucide-react";
 
 const OtpVerification = () => {
@@ -9,20 +9,15 @@ const OtpVerification = () => {
   const [statusMsg, setStatusMsg] = useState("");
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // 1. TAMBAHKAN STATE UNTUK HITUNG MUNDUR (Dimulai dari 60 detik)
   const [countdown, setCountdown] = useState(60);
 
-  // 2. EFEK HITUNG MUNDUR (Berjalan otomatis)
   useEffect(() => {
     let timer;
-    // Jika hitungan masih di atas 0, kurangi 1 setiap 1000 milidetik (1 detik)
     if (countdown > 0) {
       timer = setInterval(() => {
         setCountdown((prev) => prev - 1);
       }, 1000);
     }
-    // Bersihkan interval saat komponen dibongkar atau hitungan mencapai 0
     return () => clearInterval(timer);
   }, [countdown]);
 
@@ -35,15 +30,11 @@ const OtpVerification = () => {
       const response = await api.post("/email/verify-otp", {
         otp_code: otpCode,
       });
-
-      // Update state user di Zustand agar memiliki email_verified_at
-      // Ini akan otomatis memicu aplikasi untuk mengalihkan user ke Dashboard
       setUser(response.data.user);
     } catch (error) {
       setIsError(true);
       setStatusMsg(
-        error.response?.data?.message ||
-          "Terjadi kesalahan. Silakan coba lagi.",
+        error.response?.data?.message || "An error occurred. Please try again.",
       );
     } finally {
       setIsLoading(false);
@@ -51,7 +42,6 @@ const OtpVerification = () => {
   };
 
   const handleResend = async () => {
-    // Jika hitung mundur belum selesai, hentikan fungsi ini
     if (countdown > 0) return;
     setIsLoading(true);
     setStatusMsg("");
@@ -60,13 +50,12 @@ const OtpVerification = () => {
     try {
       const response = await api.post("/email/resend-otp");
       setIsError(false);
-      setStatusMsg(response.data.message);
-      // 3. RESET HITUNG MUNDUR KE 60 DETIK SETELAH BERHASIL KIRIM
+      setStatusMsg(response.data.message || "New OTP code sent.");
       setCountdown(60);
     } catch (error) {
       setIsError(true);
       setStatusMsg(
-        error.response?.data?.message || "Gagal mengirim ulang kode.",
+        error.response?.data?.message || "Failed to resend code.",
       );
     } finally {
       setIsLoading(false);
@@ -75,13 +64,13 @@ const OtpVerification = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans">
-      <div className="max-w-md w-full bg-white rounded-4xl shadow-xl p-8 text-center">
+      <div className="max-w-md w-full bg-white rounded-4xl shadow-xl p-8 text-center relative">
         <button
           onClick={logout}
           className="absolute top-6 right-6 text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1 text-xs font-semibold"
-          title="Batal dan Keluar"
+          title="Cancel and Log Out"
         >
-          <LogOut size={16} /> Keluar
+          <LogOut size={16} /> Log Out
         </button>
 
         {/* Icon & Header */}
@@ -89,10 +78,10 @@ const OtpVerification = () => {
           <MailCheck size={32} />
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Cek Email Anda
+          Check Your Email
         </h2>
         <p className="text-sm text-gray-500 mb-8">
-          Kami telah mengirimkan 6 digit kode OTP ke email <br />
+          We have sent a 6-digit OTP code to <br />
           <strong className="text-gray-800">{user?.email}</strong>
         </p>
 
@@ -106,13 +95,13 @@ const OtpVerification = () => {
               value={otpCode}
               onChange={(e) =>
                 setOtpCode(e.target.value.replace(/[^0-9]/g, ""))
-              } // Hanya terima angka
+              }
               className="w-full text-center text-3xl font-bold tracking-[0.5em] border-b-2 border-gray-200 py-3 focus:outline-none focus:border-brand-500 transition-colors bg-transparent"
               autoFocus
             />
           </div>
 
-          {/* Pesan Error / Sukses */}
+          {/* Error / Success Message */}
           {statusMsg && (
             <p
               className={`text-sm font-medium ${isError ? "text-red-500" : "text-green-500"}`}
@@ -129,14 +118,14 @@ const OtpVerification = () => {
             {isLoading ? (
               <Loader2 className="animate-spin" size={20} />
             ) : (
-              "Verifikasi Sekarang"
+              "Verify Now"
             )}
           </button>
         </form>
 
         {/* Resend Link */}
         <div className="mt-8 text-sm text-gray-500">
-          Belum menerima email?
+          Didn&apos;t receive the email?{" "}
           <button
             onClick={handleResend}
             disabled={countdown > 0 || isLoading}
@@ -146,7 +135,7 @@ const OtpVerification = () => {
                 : "text-brand-500 hover:underline cursor-pointer"
             }`}
           >
-            {countdown > 0 ? `Kirim ulang dalam ${countdown}s` : "Kirim Ulang"}
+            {countdown > 0 ? `Resend in ${countdown}s` : "Resend OTP"}
           </button>
         </div>
       </div>

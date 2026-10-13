@@ -23,7 +23,7 @@ const BalanceCard = () => {
           <button
             onClick={toggleHideBalance}
             className="text-brand-100 hover:text-white transition-colors cursor-pointer p-1 rounded-full hover:bg-white/10"
-            title={isBalanceHidden ? "Tampilkan Saldo" : "Sembunyikan Saldo"}
+            title={isBalanceHidden ? "Show Balance" : "Hide Balance"}
           >
             {isBalanceHidden ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>

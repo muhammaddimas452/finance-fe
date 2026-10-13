@@ -179,7 +179,7 @@ const BillModal = () => {
                 name="due_date"
                 min="1"
                 max="31"
-                placeholder="Every what date? (e.g.: 15)"
+                placeholder="Day of month (e.g., 15)"
                 className={`w-full pl-11 pr-4 py-3 bg-gray-50 rounded-xl outline-none border transition-all text-sm font-medium ${
                   errors.due_date
                     ? "border-red-500 focus:border-red-500"

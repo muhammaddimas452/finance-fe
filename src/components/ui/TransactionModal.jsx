@@ -40,8 +40,8 @@ const TransactionModal = () => {
     if (!formData.amount || formData.amount <= 0)
       newErrors.amount = "The amount must be greater than 0!";
     if (!formData.title.trim())
-      newErrors.title = "Transaction title must be filled!";
-    if (!formData.walletId) newErrors.walletId = "Choose a wallet first!";
+      newErrors.title = "Transaction title is required!";
+    if (!formData.walletId) newErrors.walletId = "Please select a wallet!";
 
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);

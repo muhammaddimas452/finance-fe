@@ -16,10 +16,10 @@ const TransferModal = () => {
     if (!data.from) newErrors.from = "Select the source wallet!";
     if (!data.to) newErrors.to = "Select the destination wallet!";
     if (data.from && data.to && data.from === data.to) {
-      newErrors.to = "The destination wallet cannot be the same!";
+      newErrors.to = "Source and destination wallets cannot be the same!";
     }
     if (!data.amount || data.amount <= 0) {
-      newErrors.amount = "The transfer nominal is not valid!";
+      newErrors.amount = "Transfer amount is not valid!";
     }
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);

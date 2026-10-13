@@ -29,7 +29,7 @@ const Wallets = () => {
   const handleSetPrimary = async (walletId) => {
     const result = await setPrimaryWallet(walletId);
     if (!result?.success) {
-      alert(result?.message || "Gagal mengubah dompet utama.");
+      alert(result?.message || "Failed to set primary wallet.");
     }
   };
 
@@ -96,7 +96,7 @@ const Wallets = () => {
                     onClick={() => {
                       if (
                         window.confirm(
-                          `Are you sure you want to delete the wallet? ${w.name}?`,
+                          `Are you sure you want to delete wallet ${w.name}?`,
                         )
                       ) {
                         deleteWallet(w.id);

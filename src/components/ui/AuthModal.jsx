@@ -47,18 +47,18 @@ const AuthModal = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     // Validasi khusus Register
     if (authMode === "register" && !formData.name.trim()) {
-      newErrors.name = "Nama lengkap wajib diisi!";
+      newErrors.name = "Full name is required!";
     }
-    // Validasi umum (Email & Password)
+    // Validation (Email & Password)
     if (!formData.email.trim()) {
-      newErrors.email = "Email wajib diisi!";
+      newErrors.email = "Email is required!";
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Format email tidak valid!";
+      newErrors.email = "Invalid email format!";
     }
     if (!formData.password) {
-      newErrors.password = "Password wajib diisi!";
+      newErrors.password = "Password is required!";
     } else if (formData.password.length < 6) {
-      newErrors.password = "Password minimal 6 karakter!";
+      newErrors.password = "Password must be at least 6 characters!";
     }
     // Jika ada error, tampilkan dan hentikan proses
     if (Object.keys(newErrors).length > 0) {

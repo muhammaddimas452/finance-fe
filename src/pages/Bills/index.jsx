@@ -62,8 +62,8 @@ const Bills = () => {
                     }`}
                     title={
                       bill.is_paid
-                        ? "Cancel Full Payment"
-                        : "Mark as Paid for This Month"
+                        ? "Mark as Unpaid"
+                        : "Mark as Paid"
                     }
                   >
                     <CheckCircle
@@ -82,7 +82,7 @@ const Bills = () => {
                     onClick={() => {
                       if (
                         window.confirm(
-                          `Are you sure you want to delete the bill? ${bill.title}?`,
+                          `Are you sure you want to delete bill ${bill.title}?`,
                         )
                       ) {
                         deleteBill(bill.id);
@@ -95,7 +95,7 @@ const Bills = () => {
                   </button>
                 </div>
               </div>
-              {/* Info Utama Tagihan */}
+              {/* Main Bill Info */}
               <div className="relative z-10">
                 <h3 className="font-medium text-white/90 text-sm tracking-wide">
                   {bill.title}
@@ -104,11 +104,11 @@ const Bills = () => {
                   {formatRupiah(bill.amount)}
                 </p>
               </div>
-              {/* Info Bawah: Jatuh Tempo & Status */}
+              {/* Bottom Info: Due Date & Status */}
               <div className="relative z-10 mt-6 pt-4 border-t border-white/20 flex justify-between items-center text-xs font-bold uppercase tracking-widest text-white/90">
                 <div className="flex items-center gap-1.5">
                   <Clock size={14} />
-                  <span>{bill.due_date} Every Month</span>
+                  <span>Day {bill.due_date} each month</span>
                 </div>
                 <span>{bill.is_paid ? "PAID" : "UNPAID"}</span>
               </div>

@@ -22,7 +22,7 @@ export const useFinanceStore = create((set) => ({
         isLoading: false,
       });
     } catch (error) {
-      console.error("Gagal mengambil data dari server:", error);
+      console.error("Failed to fetch data from server:", error);
       set({ isLoading: false });
     }
   },
@@ -35,7 +35,7 @@ export const useFinanceStore = create((set) => ({
       return {
         success: false,
         message:
-          error.response?.data?.message || "Gagal mengubah dompet utama.",
+          error.response?.data?.message || "Failed to set primary wallet.",
       };
     }
   },
@@ -46,7 +46,6 @@ export const useFinanceStore = create((set) => ({
       transactions: [],
     }),
   // --- ACTIONS ---
-  // 1. --- TAMBAH DOMPET ---
   addWallet: async (walletData) => {
     try {
       const response = await api.post("/wallets", walletData);
@@ -56,10 +55,12 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error addWallet:", error);
-      return { success: false, message: "Gagal membuat dompet baru" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to create wallet",
+      };
     }
   },
-  // --- UPDATE DOMPET ---
   updateWallet: async (id, updatedData) => {
     try {
       await api.put(`/wallets/${id}`, updatedData);
@@ -70,10 +71,12 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error updateWallet:", error);
-      return { success: false, message: "Gagal memperbarui dompet" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to update wallet",
+      };
     }
   },
-  // --- HAPUS DOMPET ---
   deleteWallet: async (id) => {
     try {
       await api.delete(`/wallets/${id}`);
@@ -84,10 +87,12 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error deleteWallet:", error);
-      return { success: false, message: "Gagal menghapus dompet" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to delete wallet",
+      };
     }
   },
-  // Tambah Kategori
   addCategory: async (categoryData) => {
     try {
       const response = await api.post("/categories", categoryData);
@@ -97,10 +102,12 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error addCategory:", error);
-      return { success: false, message: "Gagal membuat kategori" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to create category",
+      };
     }
   },
-  // Hapus Kategori
   deleteCategory: async (id) => {
     try {
       await api.delete(`/categories/${id}`);
@@ -110,10 +117,12 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error deleteCategory:", error);
-      return { success: false, message: "Gagal menghapus kategori" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to delete category",
+      };
     }
   },
-  // Update Kategori
   updateCategory: async (id, updatedData) => {
     try {
       const response = await api.put(`/categories/${id}`, updatedData);
@@ -125,10 +134,12 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error updateCategory:", error);
-      return { success: false, message: "Gagal memperbarui kategori" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to update category",
+      };
     }
   },
-  // Tambah Transaksi
   addTransaction: async (transactionData) => {
     try {
       const response = await api.post("/transactions", transactionData);
@@ -156,10 +167,12 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error addTransaction:", error);
-      return { success: false, message: "Gagal mencatat transaksi" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to record transaction",
+      };
     }
   },
-  // Hapus Transaksi
   deleteTransaction: async (id) => {
     try {
       await api.delete(`/transactions/${id}`);
@@ -168,10 +181,12 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error deleteTransaction:", error);
-      return { success: false, message: "Gagal menghapus transaksi" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to delete transaction",
+      };
     }
   },
-  // Update Transaksi
   updateTransaction: async (id, updatedData) => {
     try {
       await api.put(`/transactions/${id}`, updatedData);
@@ -180,10 +195,12 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error updateTransaction:", error);
-      return { success: false, message: "Gagal memperbarui transaksi" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to update transaction",
+      };
     }
   },
-  // Transfer antar dompet
   transfer: async (transferData) => {
     try {
       await api.post("/wallets/transfer", {
@@ -196,7 +213,10 @@ export const useFinanceStore = create((set) => ({
       return { success: true };
     } catch (error) {
       console.error("Error transfer:", error);
-      return { success: false, message: "Gagal melakukan transfer" };
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to execute transfer",
+      };
     }
   },
 }));

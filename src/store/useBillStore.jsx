@@ -11,7 +11,7 @@ export const useBillStore = create((set) => ({
       const response = await api.get("/bills");
       set({ bills: response.data.data, isLoading: false });
     } catch (error) {
-      console.error("Gagal mengambil data tagihan:", error);
+      console.error("Failed to fetch bills:", error);
       set({ isLoading: false });
     }
   },
@@ -23,7 +23,7 @@ export const useBillStore = create((set) => ({
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || "Gagal menambah tagihan.",
+        message: error.response?.data?.message || "Failed to add bill.",
       };
     }
   },
@@ -39,7 +39,7 @@ export const useBillStore = create((set) => ({
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || "Gagal mengubah tagihan.",
+        message: error.response?.data?.message || "Failed to update bill.",
       };
     }
   },
@@ -51,7 +51,7 @@ export const useBillStore = create((set) => ({
       }));
       return { success: true };
     } catch (error) {
-      return { success: false, message: "Gagal menghapus tagihan." };
+      return { success: false, message: "Failed to delete bill." };
     }
   },
 }));

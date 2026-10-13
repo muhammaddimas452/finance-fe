@@ -9,14 +9,13 @@ export const useAuthStore = create((set) => ({
     try {
       const response = await api.post("/login", { email, password });
       const { user, token } = response.data;
-      // Simpan token dan data user ke localStorage agar tidak hilang saat di-refresh
       localStorage.setItem("auth_token", token);
       localStorage.setItem("user", JSON.stringify(user));
       set({ user, isAuthenticated: true });
       return { success: true };
     } catch (error) {
       const message =
-        error.response?.data?.message || "Terjadi kesalahan saat login";
+        error.response?.data?.message || "An error occurred during login";
       return { success: false, message };
     }
   },
@@ -30,7 +29,7 @@ export const useAuthStore = create((set) => ({
       return { success: true };
     } catch (error) {
       const message =
-        error.response?.data?.message || "Terjadi kesalahan saat mendaftar";
+        error.response?.data?.message || "An error occurred during registration";
       return { success: false, message };
     }
   },
@@ -39,7 +38,7 @@ export const useAuthStore = create((set) => ({
     localStorage.setItem("user", JSON.stringify(userData));
     set({ user: userData });
   },
-  
+
   logout: async () => {
     try {
       await api.post("/logout");
@@ -68,7 +67,53 @@ export const useAuthStore = create((set) => ({
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || "Gagal memperbarui profil.",
+        message: error.response?.data?.message || "Failed to update profile.",
+      };
+    }
+  },
+  requestPasswordResetLink: async (email) => {
+    try {
+      const endpoint = email ? "/password/email" : "/password/request-change";
+      const payload = email ? { email } : {};
+      const response = await api.post(endpoint, payload);
+      return {
+        success: true,
+        message:
+          response.data.message ||
+          "Password reset verification link successfully sent to email.",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          "Failed to send password reset link.",
+      };
+    }
+  },
+  resetPasswordWithToken: async ({
+    token,
+    email,
+    password,
+    password_confirmation,
+  }) => {
+    try {
+      const response = await api.post("/password/reset", {
+        token,
+        email,
+        password,
+        password_confirmation,
+      });
+      return {
+        success: true,
+        message:
+          response.data.message || "Password updated successfully.",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Failed to update password.",
       };
     }
   },

@@ -30,9 +30,9 @@ const WalletModal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "The wallet name is required!";
+    if (!formData.name.trim()) newErrors.name = "Wallet name is required!";
     if (formData.balance === "")
-      newErrors.balance = "Initial balance cannot be empty!";
+      newErrors.balance = "Initial balance is required!";
     if (Object.keys(newErrors).length > 0) {
       return setErrors(newErrors);
     }

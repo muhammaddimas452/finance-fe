@@ -5,20 +5,29 @@ import Transactions from "./pages/Transaction";
 import Wallets from "./pages/Wallets";
 import Categories from "./pages/Category";
 import Bills from "./pages/Bills";
+import ResetPassword from "./pages/ResetPassword";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
     <BrowserRouter>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/transaction" element={<Transactions />} />
-          <Route path="/wallets" element={<Wallets />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/bills" element={<Bills />} />
-        </Routes>
-      </MainLayout>
+      <Routes>
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/*"
+          element={
+            <MainLayout>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/transaction" element={<Transactions />} />
+                <Route path="/wallets" element={<Wallets />} />
+                <Route path="/categories" element={<Categories />} />
+                <Route path="/bills" element={<Bills />} />
+              </Routes>
+            </MainLayout>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   );
 }

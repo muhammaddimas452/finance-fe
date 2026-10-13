@@ -3,29 +3,29 @@ import autoTable from "jspdf-autotable";
 
 export const downloadPDF = (transactions) => {
   if (!transactions || transactions.length === 0) {
-    alert("Tidak ada data transaksi untuk diekspor!");
+    alert("No transaction data to export!");
     return;
   }
   const doc = new jsPDF("p", "mm", "a4");
   doc.setFontSize(20);
   doc.setTextColor(40, 40, 40);
-  doc.text("Laporan Transaksi Mooney", 14, 22);
+  doc.text("Mooney Transaction Report", 14, 22);
   doc.setFontSize(10);
   doc.setTextColor(100, 100, 100);
-  const printDate = new Date().toLocaleDateString("id-ID", {
+  const printDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-  doc.text(`Tanggal Cetak: ${printDate}`, 14, 30);
+  doc.text(`Generated Date: ${printDate}`, 14, 30);
   const tableColumn = [
-    "Tanggal",
-    "Judul Transaksi",
-    "Kategori",
-    "Tipe",
-    "Nominal",
-    "Dompet",
+    "Date",
+    "Transaction Title",
+    "Category",
+    "Type",
+    "Amount",
+    "Wallet",
   ];
   const tableRows = [];
   transactions.forEach((t) => {
@@ -33,7 +33,7 @@ export const downloadPDF = (transactions) => {
       t.date,
       t.title,
       t.category?.name || "-",
-      t.type === "income" ? "Pemasukan" : "Pengeluaran",
+      t.type === "income" ? "Income" : "Expense",
       `Rp ${Number(t.amount).toLocaleString("id-ID")}`,
       t.wallet?.name || "-",
     ];
@@ -58,5 +58,5 @@ export const downloadPDF = (transactions) => {
     },
   });
   const fileNameDate = new Date().toISOString().split("T")[0];
-  doc.save(`Laporan_Mooney_${fileNameDate}.pdf`);
+  doc.save(`Mooney_Report_${fileNameDate}.pdf`);
 };
