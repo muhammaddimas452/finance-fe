@@ -117,4 +117,87 @@ export const useAuthStore = create((set) => ({
       };
     }
   },
+  refreshUser: async () => {
+    try {
+      const response = await api.get("/user");
+      const user = response.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      set({ user, isAuthenticated: true });
+      return user;
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+      return null;
+    }
+  },
+  connectGmail: async () => {
+    try {
+      const response = await api.get("/auth/google/redirect");
+      if (response.data?.url) {
+        window.location.href = response.data.url;
+        return { success: true };
+      }
+      return { success: false, message: "URL otorisasi Google tidak ditemukan." };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Gagal menghubungkan ke server Google.",
+      };
+    }
+  },
+  syncGmail: async () => {
+    try {
+      const response = await api.post("/gmail/sync");
+      // Refresh user profile for updated last_synced_at
+      try {
+        const userRes = await api.get("/user");
+        if (userRes.data) {
+          localStorage.setItem("user", JSON.stringify(userRes.data));
+          set({ user: userRes.data });
+        }
+      } catch (err) {
+        console.warn("Failed to refresh user after sync", err);
+      }
+      return { success: true, ...response.data };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Gagal melakukan sinkronisasi Gmail.",
+      };
+    }
+  },
+  disconnectGmail: async () => {
+    try {
+      const response = await api.post("/gmail/disconnect");
+      try {
+        const userRes = await api.get("/user");
+        if (userRes.data) {
+          localStorage.setItem("user", JSON.stringify(userRes.data));
+          set({ user: userRes.data });
+        }
+      } catch (err) {
+        console.warn("Failed to refresh user after disconnect", err);
+      }
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Gagal memutuskan koneksi Gmail.",
+      };
+    }
+  },
+  testParseEmail: async ({ subject, body, from }) => {
+    try {
+      const response = await api.post("/gmail/test-parse", { subject, body, from });
+      return { success: true, data: response.data.parsed };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Format email tidak berhasil dikenali.",
+      };
+    }
+  },
 }));

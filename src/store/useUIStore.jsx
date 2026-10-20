@@ -87,4 +87,11 @@ export const useUIStore = create((set) => ({
   openBillModal: (bill = null) =>
     set({ isBillModalOpen: true, selectedBill: bill }),
   closeBillModal: () => set({ isBillModalOpen: false, selectedBill: null }),
+
+  // ==========================================
+  // 7. GMAIL SYNC MODAL
+  // ==========================================
+  isGmailSyncModalOpen: false,
+  openGmailSyncModal: () => set({ isGmailSyncModalOpen: true }),
+  closeGmailSyncModal: () => set({ isGmailSyncModalOpen: false }),
 }));

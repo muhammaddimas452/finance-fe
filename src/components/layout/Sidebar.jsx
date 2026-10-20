@@ -31,8 +31,8 @@ const Sidebar = () => {
       active: false,
       path: "/transaction",
     },
-    { name: "Wallets", icon: Wallet, active: false, path: "/wallets" },
     { name: "Categories", icon: Tags, active: false, path: "/categories" },
+    { name: "Wallets", icon: Wallet, active: false, path: "/wallets" },
     { name: "Bills", icon: ReceiptText, active: false, path: "/bills" },
   ];
 

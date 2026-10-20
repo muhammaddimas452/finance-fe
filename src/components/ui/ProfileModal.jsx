@@ -12,13 +12,16 @@ import {
   AlertCircle,
   KeyRound,
   Sparkles,
+  RefreshCw,
 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useAuthStore } from "../../store/useAuthStore";
 
 const ProfileModal = () => {
-  const { isProfileModalOpen, closeProfileModal } = useUIStore();
-  const { user, updateProfile, requestPasswordResetLink } = useAuthStore();
+  const { isProfileModalOpen, closeProfileModal, openGmailSyncModal } =
+    useUIStore();
+  const { user, updateProfile, requestPasswordResetLink, connectGmail } =
+    useAuthStore();
 
   // Profile Form States
   const [profileErrors, setProfileErrors] = useState({});
@@ -36,6 +39,11 @@ const ProfileModal = () => {
     message: "",
   });
   const [countdown, setCountdown] = useState(0);
+
+  // Bank Sync State
+  const [isConnectingBank, setIsConnectingBank] = useState(false);
+  // Check whether the user has connected Gmail in the database
+  const isGmailConnected = Boolean(user && user.google_email);
 
   // Initialize data when modal opens
   useEffect(() => {
@@ -139,8 +147,17 @@ const ProfileModal = () => {
     }
   };
 
+  // Handle Connect Gmail for Auto Bank Sync
+  const handleConnectGmail = async () => {
+    setIsConnectingBank(true);
+    const res = await connectGmail();
+    if (!res.success) {
+      alert(res.message);
+      setIsConnectingBank(false);
+    }
+  };
+
   return (
-    // 1. UBAH DUA DIV PEMBUNGKUS UTAMA INI
     <div className="fixed inset-0 z-100 overflow-y-auto bg-black/50 backdrop-blur-sm transition-opacity">
       <div className="flex min-h-screen p-4 md:p-6">
         <div className="m-auto bg-white w-full max-w-3xl rounded-3xl md:rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -160,13 +177,49 @@ const ProfileModal = () => {
                 verification.
               </p>
             </div>
-            <button
-              onClick={closeProfileModal}
-              className="p-2.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
-              title="Close"
-            >
-              <X size={20} />
-            </button>
+
+            {/* TOP HEADER: GMAIL SYNC & CLOSE BUTTONS */}
+            <div className="flex items-center gap-3">
+              {isGmailConnected ? (
+                <button
+                  type="button"
+                  onClick={() => openGmailSyncModal()}
+                  className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3.5 py-2 rounded-xl border border-emerald-200 transition-colors cursor-pointer"
+                  title="Open Bank & Gmail Synchronization"
+                >
+                  <CheckCircle2 size={16} className="text-emerald-500" />
+                  <span>Gmail Connected</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleConnectGmail}
+                  disabled={isConnectingBank}
+                  className="hidden sm:flex items-center gap-2 bg-[#5b58ff] hover:bg-[#4a47e6] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer shadow-md shadow-brand-500/20 disabled:opacity-70 disabled:cursor-not-allowed shrink-0"
+                  title="Connect Gmail for Automatic Bank Notification Sync"
+                >
+                  {isConnectingBank ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      <span>Connecting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw size={15} />
+                      <span>Connect Gmail</span>
+                    </>
+                  )}
+                </button>
+              )}
+
+              <button
+                onClick={closeProfileModal}
+                className="p-2.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-700 transition-colors cursor-pointer shrink-0"
+                title="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Content Body: 2 Cards (Profile & Change Password) */}
@@ -432,7 +485,7 @@ const ProfileModal = () => {
                   type="button"
                   onClick={handleSendPasswordResetLink}
                   disabled={isSendingReset || countdown > 0}
-                  className="w-full bg-gradient-to-r from-[#5b58ff] to-[#4338ca] hover:from-[#4e4bf5] hover:to-[#3730a3] disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white py-2.5 rounded-xl text-xs font-bold shadow-md shadow-indigo-500/20 cursor-pointer transition-all flex items-center justify-center gap-2"
+                  className="w-full bg-linear-to-r from-[#5b58ff] to-[#4338ca] hover:from-[#4e4bf5] hover:to-[#3730a3] disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white py-2.5 rounded-xl text-xs font-bold shadow-md shadow-indigo-500/20 cursor-pointer transition-all flex items-center justify-center gap-2"
                 >
                   {isSendingReset ? (
                     <>
@@ -453,6 +506,54 @@ const ProfileModal = () => {
                   inbox.
                 </p>
               </div>
+            </div>
+
+            {/* =========================================
+                CARD 3: AUTOMATIC BANK & E-WALLET SYNC
+                ========================================= */}
+            <div className="md:col-span-2 bg-linear-to-r from-purple-50/80 via-indigo-50/50 to-blue-50/60 rounded-2xl md:rounded-3xl p-6 border border-indigo-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="w-11 h-11 rounded-2xl bg-white text-[#5b58ff] shadow-sm border border-indigo-100 flex items-center justify-center font-bold shrink-0">
+                  <RefreshCw size={20} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-gray-800 text-sm md:text-base">
+                      Bank & E-Wallet Notification Sync (Gmail)
+                    </h4>
+                    <span
+                      className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                        isGmailConnected
+                          ? "bg-emerald-100 text-emerald-800"
+                          : "bg-indigo-100 text-indigo-700"
+                      }`}
+                    >
+                      {isGmailConnected
+                        ? "Connected"
+                        : "Bank Jago, Permata, GoPay, etc."}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1 max-w-xl">
+                    {isGmailConnected
+                      ? `Connected with ${
+                          user?.google_email || user?.email
+                        }. Incoming notifications are automatically imported into your income & expenses.`
+                      : "Connect Gmail to automatically parse amounts, sender/recipient, and transaction types from Bank Jago, PermataBank, GoPay, DANA, OVO, and ShopeePay notifications."}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => openGmailSyncModal()}
+                className="bg-[#5b58ff] hover:bg-[#4a47e6] text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-brand-500/20 transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-1.5"
+              >
+                <Sparkles size={14} />
+                <span>
+                  {isGmailConnected
+                    ? "Open Sync Center"
+                    : "Configure Bank Sync"}
+                </span>
+              </button>
             </div>
           </div>
         </div>

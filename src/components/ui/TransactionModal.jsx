@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { X, Loader2 } from "lucide-react";
 import { useUIStore } from "../../store/useUIStore";
 import { useFinanceStore } from "../../store/useFinanceStore";
+import { useBillStore } from "../../store/useBillStore";
 
 const TransactionModal = () => {
   const {
@@ -14,9 +15,9 @@ const TransactionModal = () => {
 
   const { wallets, categories, addTransaction, updateTransaction } =
     useFinanceStore();
+  const { bills, updateBill } = useBillStore();
 
   const [errors, setErrors] = useState({});
-  // 1. Tambahkan state untuk mendeteksi status loading
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -25,6 +26,7 @@ const TransactionModal = () => {
     type: "expense",
     categoryId: "",
     walletId: "",
+    billId: "",
   });
 
   useEffect(() => {
@@ -32,6 +34,30 @@ const TransactionModal = () => {
   }, [transactionType, isTransactionModalOpen]);
 
   if (!isTransactionModalOpen) return null;
+
+  // Handler khusus untuk Dropdown Tagihan
+  const handleBillChange = (e) => {
+    const selectedBillId = e.target.value;
+
+    if (selectedBillId) {
+      // Cari data tagihan berdasarkan ID yang dipilih
+      const selectedBill = bills.find((b) => String(b.id) === selectedBillId);
+
+      if (selectedBill) {
+        setFormData((prev) => ({
+          ...prev,
+          billId: selectedBillId,
+          // Rekomendasi UX: Otomatis isi Amount
+          amount: selectedBill.amount.toString(),
+          // Rekomendasi UX: Otomatis isi Title jika title saat ini masih kosong
+          title: prev.title.trim() === "" ? selectedBill.title : prev.title,
+        }));
+      }
+    } else {
+      // Jika user membatalkan pilihan (memilih "-- No linked bill --")
+      setFormData((prev) => ({ ...prev, billId: "" }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,7 +73,6 @@ const TransactionModal = () => {
       return setErrors(newErrors);
     }
 
-    // 2. Aktifkan loading sebelum memulai request ke server
     setIsLoading(true);
 
     try {
@@ -60,18 +85,32 @@ const TransactionModal = () => {
         date: formData.date || new Date().toISOString().split("T")[0],
       };
 
+      let isSuccess = false;
+
       if (transactionEditData) {
         const result = await updateTransaction(transactionEditData.id, payload);
-        if (result.success) closeTransactionModal();
+        if (result.success) isSuccess = true;
       } else {
         const result = await addTransaction(payload);
-        if (result.success) {
-          closeTransactionModal();
-          setFormData({ amount: "", title: "", categoryId: "", walletId: "" });
+        if (result.success) isSuccess = true;
+      }
+
+      if (isSuccess) {
+        // Otomatis mengubah status tagihan menjadi Lunas (is_paid: true)
+        if (formData.type === "expense" && formData.billId) {
+          await updateBill(formData.billId, { is_paid: true });
         }
+
+        closeTransactionModal();
+        setFormData({
+          amount: "",
+          title: "",
+          categoryId: "",
+          walletId: "",
+          billId: "",
+        });
       }
     } finally {
-      // 3. Matikan loading setelah request selesai (sukses atau gagal)
       setIsLoading(false);
     }
   };
@@ -92,7 +131,7 @@ const TransactionModal = () => {
           </h3>
           <button
             onClick={closeTransactionModal}
-            className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 text-gray-500"
+            className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 text-gray-500 cursor-pointer"
           >
             <X size={20} />
           </button>
@@ -102,19 +141,23 @@ const TransactionModal = () => {
             <button
               type="button"
               className={`flex-1 py-2 text-sm cursor-pointer font-medium rounded-lg transition-colors ${formData.type === "expense" ? "bg-white text-red-500 shadow-sm" : "text-gray-500"}`}
-              onClick={() => setFormData({ ...formData, type: "expense" })}
+              onClick={() =>
+                setFormData({ ...formData, type: "expense", billId: "" })
+              }
             >
               Expense
             </button>
             <button
               type="button"
               className={`flex-1 py-2 text-sm cursor-pointer font-medium rounded-lg transition-colors ${formData.type === "income" ? "bg-white text-green-500 shadow-sm" : "text-gray-500"}`}
-              onClick={() => setFormData({ ...formData, type: "income" })}
+              onClick={() =>
+                setFormData({ ...formData, type: "income", billId: "" })
+              }
             >
               Income
             </button>
           </div>
-          {/* --- INPUT TITLE DENGAN VALIDASI --- */}
+
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1">
               Title
@@ -137,7 +180,31 @@ const TransactionModal = () => {
               </p>
             )}
           </div>
-          {/* --- INPUT AMOUNT DENGAN VALIDASI --- */}
+
+          {/* Posisi Link to Bill Dipindahkan ke Bawah Title */}
+          {formData.type === "expense" && bills && bills.length > 0 && (
+            <div className="pt-2">
+              <label className="block text-xs font-semibold text-brand-600 mb-1">
+                Link to Bill (Optional)
+              </label>
+              <select
+                name="billId"
+                value={formData.billId}
+                onChange={handleBillChange} // Menggunakan handler kustom
+                className="w-full bg-brand-50 border border-brand-100 cursor-pointer text-gray-800 text-sm rounded-xl focus:ring-brand-500 focus:border-brand-500 block p-3 outline-none"
+              >
+                <option value="">-- No linked bill --</option>
+                {bills
+                  .filter((b) => !b.is_paid)
+                  .map((bill) => (
+                    <option key={bill.id} value={bill.id}>
+                      {bill.title} (Target: Rp{bill.amount})
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1">
               Amount (Rp)
@@ -161,7 +228,7 @@ const TransactionModal = () => {
               </p>
             )}
           </div>
-          {/* --- INPUT CATEGORY DENGAN VALIDASI --- */}
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1">
@@ -183,7 +250,6 @@ const TransactionModal = () => {
                   ))}
               </select>
             </div>
-            {/* --- SELECT WALLET DENGAN VALIDASI --- */}
             <div>
               <label className="block text-xs font-semibold text-gray-500 mb-1">
                 Wallet
@@ -213,7 +279,6 @@ const TransactionModal = () => {
             </div>
           </div>
 
-          {/* 4. Update Button dengan kondisi isLoading */}
           <button
             type="submit"
             disabled={isLoading}

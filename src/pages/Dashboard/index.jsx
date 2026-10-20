@@ -12,6 +12,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import BalanceCard from "../../components/ui/BalanceCard";
+import CashflowOverview from "../../components/ui/CashFlowOverview";
+import UpcomingBillsWidget from "../../components/ui/UpcomingBillsWidget";
 import { useFinanceStore } from "../../store/useFinanceStore";
 import { formatRupiah } from "../../utils/currency";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -28,14 +30,8 @@ const Dashboard = () => {
 
   const [resendStatus, setResendStatus] = useState("");
   const [isResending, setIsResending] = useState(false);
-  const totalIncome = transactions
-    .filter((t) => t.type === "income")
-    .reduce((total, t) => total + parseFloat(t.amount || 0), 0);
-  const totalExpense = transactions
-    .filter((t) => t.type === "expense")
-    .reduce((total, t) => total + parseFloat(t.amount || 0), 0);
-  const netIncome = totalIncome - totalExpense;
-  totalIncome > 0 ? Math.round((netIncome / totalIncome) * 100) : 0;
+
+  // Perhitungan Data Grafik
   const monthNames = [
     "JAN",
     "FEB",
@@ -57,11 +53,13 @@ const Dashboard = () => {
     d.setMonth(currentMonthIndex - 5 + i);
     return monthNames[d.getMonth()];
   });
+
   let historyData = last6Months.map((month) => ({
     name: month,
     income: 0,
     expense: 0,
   }));
+
   transactions.forEach((t) => {
     if (!t.date) return;
     const tMonth = monthNames[new Date(t.date).getMonth()];
@@ -71,6 +69,7 @@ const Dashboard = () => {
       if (t.type === "expense") monthEntry.expense += parseFloat(t.amount || 0);
     }
   });
+
   const cashFlowData = historyData.map((m) => ({
     name: m.name,
     balance: m.income - m.expense,
@@ -90,7 +89,9 @@ const Dashboard = () => {
     setIsResending(true);
     try {
       await axios.post("/api/email/resend");
-      setResendStatus("A new email has been sent. Please check your Inbox or Spam folder.");
+      setResendStatus(
+        "A new email has been sent. Please check your Inbox or Spam folder.",
+      );
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setResendStatus("Failed to send email. Please try again later.");
@@ -114,14 +115,15 @@ const Dashboard = () => {
           <button
             onClick={handleResendEmail}
             disabled={isResending}
-            className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+            className="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 whitespace-nowrap"
           >
             {isResending ? "Sending..." : "Resend Email"}
           </button>
         </div>
       )}
+
       {/* Header Area */}
-      <header className="flex items-center justify-between mb-8">
+      <header className="flex items-center justify-between mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
           Dashboard
         </h1>
@@ -134,10 +136,11 @@ const Dashboard = () => {
             className="bg-transparent border-none outline-none w-full text-sm text-gray-700"
           />
         </div>
-        {/* TOMBOL PROFILE */}
+        {/* TOMBOL PROFILE (Tampil di Mobile/Tablet) */}
+        {/* TOMBOL PROFILE (Disembunyikan di HP, Tampil di Tablet) */}
         <button
           onClick={() => setIsRightPanelOpen(true)}
-          className="hidden md:flex lg:hidden w-10 h-10 rounded-full overflow-hidden shadow-md border-2 border-white hover:ring-2 hover:ring-[#5b58ff] transition-all cursor-pointer bg-gray-100 items-center justify-center"
+          className="hidden md:flex lg:hidden w-10 h-10 rounded-full overflow-hidden shadow-md border-2 border-white hover:ring-2 hover:ring-[#5b58ff] transition-all cursor-pointer bg-gray-100 items-center justify-center shrink-0"
         >
           {isAuthenticated && user?.avatar ? (
             <img
@@ -150,114 +153,138 @@ const Dashboard = () => {
           )}
         </button>
       </header>
-      {/* Grid Layout untuk Konten */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        {/* ROW 1: Balance Card (Kiri 5/12) & Exchange Rates (Kanan 7/12) */}
-        <div className="xl:col-span-5 h-55">
+
+      {/* 
+        Grid Layout Kolom (Pilar Kiri & Pilar Kanan)
+        Menggunakan items-start agar kolom tidak saling memaksakan tinggi
+      */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-6 items-start">
+        {/* ==============================
+            KOLOM KIRI (Col-span 5)
+            ============================== */}
+        <div className="lg:col-span-5 flex flex-col gap-6">
+          {/* 1. Total Balance */}
           <BalanceCard />
-        </div>
-        <div className="xl:col-span-7 bg-white rounded-4xl p-6 shadow-soft h-62.5 xl:h-55 flex flex-col">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-gray-800">Cash Flow Trend</h3>
-            <span className="text-xs font-semibold text-gray-400">
-              Last 6 Months
-            </span>
-          </div>
-          <div className="flex-1 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={cashFlowData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="#f0f0f0"
-                />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 10, fill: "#A0AEC0" }}
-                  dy={10}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 10, fill: "#A0AEC0" }}
-                  dx={-10}
-                  width={60}
-                />
-                <Tooltip
-                  cursor={{ stroke: "#e0e0ff", strokeWidth: 2 }}
-                  formatter={(value) => formatRupiah(value)}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="balance"
-                  stroke="#5b58ff"
-                  strokeWidth={3}
-                  dot={{
-                    r: 4,
-                    fill: "#5b58ff",
-                    strokeWidth: 2,
-                    stroke: "#fff",
-                  }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+
+          {/* 2. Cashflow Overview */}
+          <CashflowOverview />
+
+          {/* 3. Upcoming Bills */}
+          <div className="flex-1">
+            <UpcomingBillsWidget />
           </div>
         </div>
-        {/* ROW 2: History (Kiri 7/12) & Efficiency (Kanan 5/12) */}
-        <div className="xl:col-span-7 bg-white rounded-4xl p-6 shadow-soft h-75 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-gray-800">Income vs Expense</h3>
-            <button className="text-gray-400 hover:text-gray-600">
-              <MoreHorizontal size={20} />
-            </button>
-          </div>
-          <div className="flex-1 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={historyData} barSize={8}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="#f0f0f0"
-                />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 10, fill: "#A0AEC0" }}
-                  dy={10}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 10, fill: "#A0AEC0" }}
-                  dx={-10}
-                  width={60}
-                />
-                <Tooltip
-                  cursor={{ fill: "transparent" }}
-                  formatter={(value) => formatRupiah(value)}
-                />
-                <Bar
-                  dataKey="income"
-                  fill="#5b58ff"
-                  radius={[10, 10, 10, 10]}
-                />
-                <Bar
-                  dataKey="expense"
-                  fill="#ffb3c6"
-                  radius={[10, 10, 10, 10]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="flex justify-center gap-6 mt-4 text-xs font-medium text-gray-400">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#5b58ff]"></div> Income
+
+        {/* ==============================
+            KOLOM KANAN (Col-span 7)
+            ============================== */}
+        <div className="lg:col-span-7 flex flex-col gap-6">
+          {/* 1. Cash Flow Trend (Line Chart) */}
+          <div className="bg-white rounded-3xl md:rounded-4xl p-5 md:p-6 shadow-soft h-[22rem] flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-gray-800">Cash Flow Trend</h3>
+              <span className="text-xs font-semibold text-gray-400">
+                Last 6 Months
+              </span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#ffb3c6]"></div> Expense
+            <div className="flex-1 w-full min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={cashFlowData}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="#f0f0f0"
+                  />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 10, fill: "#A0AEC0" }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 10, fill: "#A0AEC0" }}
+                    dx={-10}
+                    width={60}
+                  />
+                  <Tooltip
+                    cursor={{ stroke: "#e0e0ff", strokeWidth: 2 }}
+                    formatter={(value) => formatRupiah(value)}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="balance"
+                    stroke="#5b58ff"
+                    strokeWidth={3}
+                    dot={{
+                      r: 4,
+                      fill: "#5b58ff",
+                      strokeWidth: 2,
+                      stroke: "#fff",
+                    }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* 2. Income vs Expense (Bar Chart) */}
+          <div className="bg-white rounded-3xl md:rounded-4xl p-5 md:p-6 shadow-soft h-[24rem] flex flex-col">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-bold text-gray-800">Income vs Expense</h3>
+              <button className="text-gray-400 hover:text-gray-600 cursor-pointer">
+                <MoreHorizontal size={20} />
+              </button>
+            </div>
+            <div className="flex-1 w-full min-h-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={historyData} barSize={8}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="#f0f0f0"
+                  />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 10, fill: "#A0AEC0" }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 10, fill: "#A0AEC0" }}
+                    dx={-10}
+                    width={60}
+                  />
+                  <Tooltip
+                    cursor={{ fill: "transparent" }}
+                    formatter={(value) => formatRupiah(value)}
+                  />
+                  <Bar
+                    dataKey="income"
+                    fill="#5b58ff"
+                    radius={[10, 10, 10, 10]}
+                  />
+                  <Bar
+                    dataKey="expense"
+                    fill="#ffb3c6"
+                    radius={[10, 10, 10, 10]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-center gap-6 mt-4 text-xs font-medium text-gray-400">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#5b58ff]"></div> Income
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#ffb3c6]"></div>{" "}
+                Expense
+              </div>
             </div>
           </div>
         </div>
